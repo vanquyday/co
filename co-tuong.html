@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Luyện Cờ Tướng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E4EAE4; --panel:#F6F8F4; --panel2:#ECF1EC; --ink:#1C2723; --muted:#56665F; --line:#C8D2CB;
+  --wood:#DCA65C; --wood2:#C98F43; --grid:#5B3A18; --river:#7A4E22;
+  --red:#B3261E; --blk:#1F1F1F; --piece:#F4E4C1; --piece2:#E2C996; --edge:#9C7240;
+  --jade:#25775A; --good:#3E8E4F; --amber:#B7790C; --orange:#C8551B; --danger:#B42318;
+  --focus:#1F6FB2;
+  --sans:"Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --han:"Noto Serif TC", "Songti TC", "PMingLiU", "SimSun", serif;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1713; --panel:#16211C; --panel2:#1C2a24; --ink:#E5EEE9; --muted:#9AAEA4; --line:#2B3D35;
+    --wood:#C7924C; --wood2:#AE7A37; --grid:#3E2710; --river:#4A2F12;
+    --jade:#4DB389; --good:#6DBB7C; --amber:#E0A53A; --orange:#EA7D45; --danger:#F06A5C; --focus:#6FB0EA;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1713; --panel:#16211C; --panel2:#1C2a24; --ink:#E5EEE9; --muted:#9AAEA4; --line:#2B3D35;
+  --wood:#C7924C; --wood2:#AE7A37; --grid:#3E2710; --river:#4A2F12;
+  --jade:#4DB389; --good:#6DBB7C; --amber:#E0A53A; --orange:#EA7D45; --danger:#F06A5C; --focus:#6FB0EA;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.app{max-width:1180px;margin:0 auto;padding:14px 16px 28px;display:grid;grid-template-columns:minmax(0,640px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:920px){.app{grid-template-columns:1fr;padding:10px 10px 24px;gap:14px}}
+
+.brand{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
+.brand .seal{font-family:var(--han);font-weight:900;font-size:22px;color:#fff;background:var(--red);padding:2px 6px 3px;border-radius:4px;line-height:1.1;letter-spacing:2px}
+.brand h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.01em}
+.brand small{color:var(--muted);font-size:13px}
+
+.status{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:30px;margin-bottom:6px}
+#status{font-weight:600}
+#status.alert{color:var(--danger)}
+.spinner{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--jade);display:inline-block;vertical-align:-2px;margin-right:6px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.evalwrap{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.evalbar{flex:1;height:10px;border-radius:5px;background:#262626;overflow:hidden;position:relative;border:1px solid var(--line)}
+.evalbar i{position:absolute;inset:0 auto 0 0;background:var(--red);transition:width .5s ease}
+.evalbar::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--panel)}
+#evaltxt{min-width:84px;text-align:right;font-variant-numeric:tabular-nums}
+
+.boardbox{position:relative;margin:0 auto;max-width:max(300px,calc((100svh - 190px)*0.905));border-radius:10px;background:linear-gradient(160deg,var(--wood),var(--wood2));box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 10px 28px -14px rgba(60,30,0,.55);padding:0}
+svg#board{display:block;width:100%;height:auto;touch-action:manipulation;user-select:none;-webkit-user-select:none;cursor:pointer}
+.pzbanner{display:none;margin-bottom:8px;padding:10px 12px;border-radius:8px;background:var(--panel);border:1px solid var(--line)}
+.pzbanner.on{display:block}
+.pzbanner b{display:block}
+.pzbanner .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{border:1px solid var(--line);background:var(--panel);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px}
+.btn:hover{background:var(--panel2)}
+.btn.primary{background:var(--jade);border-color:var(--jade);color:#fff}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.small{padding:5px 10px;font-size:13px}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-height:520px;max-height:calc(100vh - 40px);position:sticky;top:calc(14px + env(safe-area-inset-top,0px))}
+@media (max-width:920px){.panel{position:static;max-height:none;min-height:0}}
+.tabs{display:flex;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs button{flex:1 0 auto;border:0;background:none;padding:11px 12px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);border-bottom:2px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red)}
+.tabpane{display:none;padding:14px;overflow:auto;flex:1}
+.tabpane.on{display:block}
+
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:13.5px;padding:10px 12px;background:var(--panel2);border-radius:8px;margin-bottom:12px}
+@media (max-width:420px){.toggles{grid-template-columns:1fr}}
+.toggles label{display:flex;gap:7px;align-items:center;cursor:pointer}
+.toggles input{accent-color:var(--jade);width:16px;height:16px}
+
+.feed{display:flex;flex-direction:column;gap:10px}
+.card{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel)}
+.card header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.card p{margin:4px 0}
+.card .tip{color:var(--muted);font-style:italic}
+.card .mv{font-weight:700}
+.card .meta{margin-left:auto;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.card .acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.badge{font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;color:#fff;background:var(--muted)}
+.c-best{border-left-color:var(--jade)} .c-best .badge{background:var(--jade)}
+.c-good{border-left-color:var(--good)} .c-good .badge{background:var(--good)}
+.c-inacc{border-left-color:var(--amber)} .c-inacc .badge{background:var(--amber)}
+.c-mistake{border-left-color:var(--orange)} .c-mistake .badge{background:var(--orange)}
+.c-blunder{border-left-color:var(--danger)} .c-blunder .badge{background:var(--danger)}
+.c-ai{background:var(--panel2);border-left-color:var(--blk)}
+:root[data-theme="dark"] .c-ai, .c-ai{border-left-color:var(--muted)}
+.c-hint{border-left-color:var(--focus)}
+.c-end{border:2px solid var(--red);border-left-width:6px}
+.c-info{border-left-color:var(--muted)}
+
+.moves{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+.moves td,.moves th{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left}
+.moves th{font-size:12.5px;color:var(--muted);font-weight:600}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px;background:transparent}
+.dot.best{background:var(--jade)}.dot.good{background:var(--good)}.dot.inacc{background:var(--amber)}.dot.mistake{background:var(--orange)}.dot.blunder{background:var(--danger)}
+
+.lesson details{border-bottom:1px solid var(--line);padding:8px 0}
+.lesson summary{cursor:pointer;font-weight:700;padding:4px 0;list-style-position:outside}
+.lesson p,.lesson li{max-width:68ch}
+.lesson ul,.lesson ol{padding-left:20px;margin:6px 0}
+.lesson table{border-collapse:collapse;margin:6px 0;font-size:14px}
+.lesson td{padding:3px 12px 3px 0;border-bottom:1px solid var(--line)}
+.han{font-family:var(--han);font-weight:900}
+
+.pzlist{display:flex;flex-direction:column;gap:8px;margin:6px 0 14px}
+.pzitem{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--panel);cursor:pointer;text-align:left;width:100%}
+.pzitem:hover{background:var(--panel2)}
+.pzitem .t{font-weight:700}
+.pzitem .d{font-size:13px;color:var(--muted)}
+.pzitem .ok{margin-left:auto;color:var(--jade);font-weight:700;font-size:13px}
+h3{font-size:15px;margin:14px 0 4px}
+h3:first-child{margin-top:0}
+.muted{color:var(--muted)}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--panel2);border-radius:8px;padding:10px}
+.stat b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;color:var(--muted)}
+.spark{width:100%;height:70px;display:block;margin:6px 0 12px}
+
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);padding:18px;max-width:440px;width:calc(100% - 24px)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h2{margin:0 0 10px;font-size:18px}
+.opts{display:flex;flex-direction:column;gap:6px;margin:6px 0 14px}
+.opts label{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer}
+.opts label:has(input:checked){border-color:var(--jade);background:var(--panel2)}
+.opts input{accent-color:var(--jade);margin-top:4px}
+.opts small{display:block;color:var(--muted)}
+.dlgrow{display:flex;gap:8px;justify-content:flex-end}
+
+/* mobile */
+.tgl{margin-bottom:12px}
+.tgl summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--muted);padding:2px 0 8px}
+.tgl .toggles{margin-bottom:0}
+.latest{display:none}
+dialog{max-height:calc(100svh - 32px);overflow:auto}
+@media (max-width:920px){
+  .brand{margin-bottom:4px}.brand h1{font-size:17px}.brand .seal{font-size:18px}.brand small{display:none}
+  .status{min-height:24px;margin-bottom:4px;font-size:14px}
+  .evalwrap{margin-bottom:6px}
+  .controls{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .controls .btn{padding:11px 4px;font-size:13.5px}
+  .latest{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .latest .card{font-size:14px}
+  .feed>.card:nth-child(-n+2){display:none}
+  .tabs button{padding:10px 12px;font-size:13.5px}
+  .tabpane{padding:12px}
+  .stat b{font-size:19px}
+}
+/* board svg */
+.ln{stroke:var(--grid);stroke-width:1.4;fill:none}
+.ln.out{stroke-width:3}
+.mk{stroke:var(--grid);stroke-width:1.3;fill:none}
+.rv{font-family:var(--han);font-weight:600;font-size:30px;fill:var(--river);opacity:.85;letter-spacing:10px}
+.fl{font-size:15px;fill:var(--grid);font-weight:600;font-family:var(--sans)}
+.pc .base{fill:url(#pg);stroke:var(--edge);stroke-width:1.5}
+.pc .ring{fill:none;stroke-width:1.6}
+.pc.r .ring{stroke:var(--red)} .pc.b .ring{stroke:var(--blk)}
+.pc text{font-family:var(--han);font-weight:900;font-size:27px;text-anchor:middle;dominant-baseline:central}
+.pc.vn text{font-family:var(--sans);font-weight:700;font-size:20px}
+.pc.r text{fill:var(--red)} .pc.b text{fill:var(--blk)}
+.pc .shadow{fill:rgba(40,20,0,.35)}
+.sel{fill:none;stroke:var(--focus);stroke-width:3.5}
+.tgt{fill:var(--jade);opacity:.85}
+.tgtc{fill:none;stroke:var(--jade);stroke-width:3.5;opacity:.9}
+.last{fill:none;stroke:#2c6fb4;stroke-width:2.5;opacity:.75}
+.thr{fill:none;stroke:var(--danger);stroke-width:3;stroke-dasharray:6 4}
+.opp{fill:none;stroke:var(--jade);stroke-width:3;stroke-dasharray:3 4}
+.chk{fill:rgba(220,40,30,.35)}
+.hintp{fill:none;stroke:var(--focus);stroke-width:4}
+.arrow{stroke:var(--focus);stroke-width:7;stroke-linecap:round;opacity:.82}
+@media (prefers-reduced-motion: reduce){.thr{stroke-dasharray:none}.spinner{animation:none}.evalbar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <main>
+    <div class="brand"><span class="seal">象棋</span><h1>Luyện Cờ Tướng</h1><small id="sub"></small></div>
+    <div class="pzbanner" id="pzb"></div>
+    <div class="status"><div id="status" aria-live="polite"></div></div>
+    <div class="evalwrap"><span>Thế cờ</span><div class="evalbar" title="Lợi thế: đỏ bên trái, đen bên phải"><i id="evalfill" style="width:50%"></i></div><span id="evaltxt">Cân bằng</span></div>
+    <div class="boardbox"><svg id="board" viewBox="0 0 572 632" role="img" aria-label="Bàn cờ tướng"></svg></div>
+    <div class="controls">
+      <button class="btn primary" id="bNew">Ván mới</button>
+      <button class="btn" id="bHint">Gợi ý</button>
+      <button class="btn" id="bUndo">Đi lại</button>
+      <button class="btn" id="bTheme" title="Đổi giao diện sáng/tối">Sáng / tối</button>
+    </div>
+    <div id="latest" class="latest" aria-live="polite"></div>
+  </main>
+  <aside class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="coach" aria-selected="true">Huấn luyện</button>
+      <button role="tab" data-tab="moves" aria-selected="false">Nước đi</button>
+      <button role="tab" data-tab="lessons" aria-selected="false">Bài học</button>
+      <button role="tab" data-tab="puzzles" aria-selected="false">Bài tập</button>
+      <button role="tab" data-tab="progress" aria-selected="false">Tiến bộ</button>
+    </div>
+    <section class="tabpane on" id="t-coach">
+      <details class="tgl" id="tgl" open><summary>Tuỳ chọn hiển thị</summary>
+      <div class="toggles">
+        <label><input type="checkbox" id="oThreat"> Cảnh báo quân bị đe doạ</label>
+        <label><input type="checkbox" id="oOpp"> Chỉ ra cơ hội ăn quân</label>
+        <label><input type="checkbox" id="oPause"> Dừng lại khi đi sai</label>
+        <label><input type="checkbox" id="oVn"> Ký hiệu chữ Việt</label>
+      </div>
+      </details>
+      <div class="feed" id="feed"></div>
+    </section>
+    <section class="tabpane" id="t-moves"><table class="moves"><thead><tr><th>#</th><th>Đỏ</th><th>Đen</th></tr></thead><tbody id="mvbody"></tbody></table><p class="muted" style="font-size:13px;margin-top:10px">Ký hiệu: “.” tiến, “/” thoái, “-” bình. Chấm màu cho biết chất lượng nước đi của bạn.</p></section>
+    <section class="tabpane lesson" id="t-lessons"></section>
+    <section class="tabpane" id="t-puzzles"></section>
+    <section class="tabpane" id="t-progress"></section>
+  </aside>
+</div>
+
+<dialog id="dlgNew">
+  <h2>Ván mới</h2>
+  <div><b>Bạn cầm quân</b></div>
+  <div class="opts" id="optSide">
+    <label><input type="radio" name="side" value="1" checked><span>Đỏ<small>Đi trước — phù hợp để luyện khai cuộc tấn công</small></span></label>
+    <label><input type="radio" name="side" value="-1"><span>Đen<small>Máy đi trước — luyện cách phòng thủ và phản công</small></span></label>
+  </div>
+  <div><b>Trình độ của máy</b></div>
+  <div class="opts" id="optLevel"></div>
+  <div class="dlgrow"><button class="btn" id="dlgCancel">Huỷ</button><button class="btn primary" id="dlgStart">Bắt đầu</button></div>
+</dialog>
+
+<script>
+// ===== Xiangqi engine =====
+const START_FEN = 'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w';
+const MATE = 30000;
+const VAL = { k: 0, a: 200, b: 200, n: 400, r: 900, c: 450, p: 100 };
+const DIRS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+const DIAG = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+const KN = [[-2, -1], [-2, 1], [2, -1], [2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2]];
+const PIECES = 'KABNRCPkabnrcp';
+
+function sideOf(p) { return p === '.' ? 0 : (p < 'a' ? 1 : -1); }
+function inB(r, c) { return r >= 0 && r < 10 && c >= 0 && c < 9; }
+function inPalace(r, c, s) { if (c < 3 || c > 5 || r < 0 || r > 9) return false; return s === 1 ? r >= 7 : r <= 2; }
+function ownHalf(r, s) { return s === 1 ? r >= 5 : r <= 4; }
+function crossed(r, s) { return s === 1 ? r <= 4 : r >= 5; }
+
+// piece-square tables (red perspective, r=0 is the enemy back rank)
+function pstVal(t, r, c) {
+  const cd = Math.abs(c - 4);
+  switch (t) {
+    case 'p': {
+      if (r >= 5) return r === 5 ? 10 : 0;
+      let v = 90 + [10, 40, 40, 30, 20][r];
+      if (cd <= 1) v += 20; else if (cd === 2) v += 10;
+      return v;
+    }
+    case 'n': {
+      let v = (4 - cd) * 6;
+      if (r >= 2 && r <= 5) v += 20; else if (r === 1 || r === 6) v += 10;
+      if (r === 9) v -= 10;
+      if (c === 0 || c === 8) v -= 15;
+      if (r === 1 && cd <= 1) v += 10;
+      return v;
+    }
+    case 'c': { let v = 0; if (c === 4) v += 20; if (r <= 2) v += 10; return v; }
+    case 'r': {
+      let v = 0; if (r <= 4) v += 15; if (r === 2 || r === 3) v += 10;
+      if (r === 9 && (c === 0 || c === 8)) v -= 15; if (cd <= 1) v += 5; return v;
+    }
+    case 'a': return (r === 8 && c === 4) ? 10 : 0;
+    case 'b': return (r === 7 && c === 4) ? 10 : 0;
+    case 'k': return r === 9 ? 0 : -15;
+  }
+  return 0;
+}
+const PST = {};
+for (const t of 'kabnrcp') { PST[t] = []; for (let i = 0; i < 90; i++) PST[t].push(pstVal(t, (i / 9) | 0, i % 9)); }
+
+// zobrist
+let _seed = 0x9e3779b9;
+function rnd32() { _seed ^= _seed << 13; _seed >>>= 0; _seed ^= _seed >>> 17; _seed ^= _seed << 5; _seed >>>= 0; return _seed; }
+const Z1 = {}, Z2 = {};
+for (const p of PIECES) { Z1[p] = []; Z2[p] = []; for (let i = 0; i < 90; i++) { Z1[p].push(rnd32()); Z2[p].push(rnd32()); } }
+const ZS1 = rnd32(), ZS2 = rnd32();
+
+function attacked(b, sq, by) {
+  const r = (sq / 9) | 0, c = sq % 9;
+  for (const [dr, dc] of DIRS) {
+    let rr = r + dr, cc = c + dc, screen = false;
+    while (inB(rr, cc)) {
+      const p = b[rr * 9 + cc];
+      if (p !== '.') {
+        if (!screen) {
+          if (sideOf(p) === by) {
+            const t = p.toLowerCase();
+            if (t === 'r') return true;
+            if (t === 'k' && rr === r + dr && cc === c + dc && inPalace(r, c, by)) return true;
+          }
+          screen = true;
+        } else {
+          if (sideOf(p) === by && (p === 'C' || p === 'c')) return true;
+          break;
+        }
+      }
+      rr += dr; cc += dc;
+    }
+  }
+  const P = by === 1 ? 'P' : 'p', N = by === 1 ? 'N' : 'n', A = by === 1 ? 'A' : 'a', Bp = by === 1 ? 'B' : 'b';
+  const f = by === 1 ? 1 : -1;
+  if (inB(r + f, c) && b[(r + f) * 9 + c] === P) return true;
+  if (crossed(r, by)) { for (const dc of [-1, 1]) if (inB(r, c + dc) && b[r * 9 + c + dc] === P) return true; }
+  for (const [dr, dc] of KN) {
+    const nr = r + dr, nc = c + dc;
+    if (!inB(nr, nc) || b[nr * 9 + nc] !== N) continue;
+    let lr, lc;
+    if (Math.abs(dr) === 2) { lr = nr - Math.sign(dr); lc = nc; } else { lr = nr; lc = nc - Math.sign(dc); }
+    if (b[lr * 9 + lc] === '.') return true;
+  }
+  if (inPalace(r, c, by)) {
+    for (const [dr, dc] of DIAG) { const ar = r + dr, ac = c + dc; if (inB(ar, ac) && b[ar * 9 + ac] === A) return true; }
+  }
+  if (ownHalf(r, by)) {
+    for (const [dr, dc] of DIAG) {
+      const er = r + 2 * dr, ec = c + 2 * dc;
+      if (inB(er, ec) && b[er * 9 + ec] === Bp && b[(r + dr) * 9 + c + dc] === '.') return true;
+    }
+  }
+  return false;
+}
+
+class Pos {
+  constructor(fen) { this.load(fen || START_FEN); }
+  load(fen) {
+    const [bd, s] = fen.trim().split(/\s+/);
+    this.b = [];
+    for (const row of bd.split('/')) for (const ch of row) {
+      if (ch >= '0' && ch <= '9') for (let i = 0; i < +ch; i++) this.b.push('.'); else this.b.push(ch);
+    }
+    this.side = s === 'b' ? -1 : 1;
+    this.stack = []; this.hist = [];
+    this.kr = this.b.indexOf('K'); this.kb = this.b.indexOf('k');
+    this.rehash();
+  }
+  rehash() {
+    let h1 = 0, h2 = 0;
+    for (let i = 0; i < 90; i++) { const p = this.b[i]; if (p !== '.') { h1 ^= Z1[p][i]; h2 ^= Z2[p][i]; } }
+    if (this.side === -1) { h1 ^= ZS1; h2 ^= ZS2; }
+    this.h1 = h1 >>> 0; this.h2 = h2 >>> 0;
+  }
+  fen() {
+    let out = '';
+    for (let r = 0; r < 10; r++) {
+      let e = 0;
+      for (let c = 0; c < 9; c++) { const p = this.b[r * 9 + c]; if (p === '.') e++; else { if (e) { out += e; e = 0; } out += p; } }
+      if (e) out += e; if (r < 9) out += '/';
+    }
+    return out + (this.side === 1 ? ' w' : ' b');
+  }
+  clone() { const p = new Pos(this.fen()); p.hist = this.hist.slice(); return p; }
+  make(m) {
+    const f = m >> 7, t = m & 127, p = this.b[f], cap = this.b[t];
+    this.stack.push({ m, cap, h1: this.h1, h2: this.h2 });
+    this.hist.push(this.h1);
+    let h1 = this.h1 ^ Z1[p][f] ^ Z1[p][t] ^ ZS1, h2 = this.h2 ^ Z2[p][f] ^ Z2[p][t] ^ ZS2;
+    if (cap !== '.') { h1 ^= Z1[cap][t]; h2 ^= Z2[cap][t]; }
+    this.h1 = h1 >>> 0; this.h2 = h2 >>> 0;
+    this.b[t] = p; this.b[f] = '.';
+    if (p === 'K') this.kr = t; else if (p === 'k') this.kb = t;
+    this.side = -this.side;
+  }
+  unmake() {
+    const u = this.stack.pop(); this.hist.pop();
+    const f = u.m >> 7, t = u.m & 127, p = this.b[t];
+    this.b[f] = p; this.b[t] = u.cap;
+    if (p === 'K') this.kr = f; else if (p === 'k') this.kb = f;
+    this.h1 = u.h1; this.h2 = u.h2; this.side = -this.side;
+  }
+  facing() {
+    if (this.kr < 0 || this.kb < 0) return false;
+    if (this.kr % 9 !== this.kb % 9) return false;
+    for (let s = this.kb + 9; s < this.kr; s += 9) if (this.b[s] !== '.') return false;
+    return true;
+  }
+  inCheck(s) {
+    const k = s === 1 ? this.kr : this.kb;
+    if (k < 0) return true;
+    return attacked(this.b, k, -s) || this.facing();
+  }
+  gen(capOnly, s) {
+    if (s === undefined) s = this.side;
+    const b = this.b, out = [];
+    const add = (f, t) => { const q = b[t]; const qs = sideOf(q); if (qs === s) return; if (capOnly && qs === 0) return; out.push(f << 7 | t); };
+    for (let f = 0; f < 90; f++) {
+      const p = b[f]; if (sideOf(p) !== s) continue;
+      const r = (f / 9) | 0, c = f % 9, t = p.toLowerCase();
+      if (t === 'k') { for (const [dr, dc] of DIRS) { const rr = r + dr, cc = c + dc; if (inPalace(rr, cc, s)) add(f, rr * 9 + cc); } }
+      else if (t === 'a') { for (const [dr, dc] of DIAG) { const rr = r + dr, cc = c + dc; if (inPalace(rr, cc, s)) add(f, rr * 9 + cc); } }
+      else if (t === 'b') {
+        for (const [dr, dc] of DIAG) { const rr = r + 2 * dr, cc = c + 2 * dc; if (inB(rr, cc) && ownHalf(rr, s) && b[(r + dr) * 9 + c + dc] === '.') add(f, rr * 9 + cc); }
+      } else if (t === 'n') {
+        for (const [dr, dc] of KN) {
+          const rr = r + dr, cc = c + dc; if (!inB(rr, cc)) continue;
+          const lr = Math.abs(dr) === 2 ? r + Math.sign(dr) : r, lc = Math.abs(dr) === 2 ? c : c + Math.sign(dc);
+          if (b[lr * 9 + lc] === '.') add(f, rr * 9 + cc);
+        }
+      } else if (t === 'r') {
+        for (const [dr, dc] of DIRS) { let rr = r + dr, cc = c + dc; while (inB(rr, cc)) { const q = b[rr * 9 + cc]; if (q === '.') { if (!capOnly) out.push(f << 7 | (rr * 9 + cc)); } else { if (sideOf(q) !== s) out.push(f << 7 | (rr * 9 + cc)); break; } rr += dr; cc += dc; } }
+      } else if (t === 'c') {
+        for (const [dr, dc] of DIRS) {
+          let rr = r + dr, cc = c + dc, screen = false;
+          while (inB(rr, cc)) {
+            const q = b[rr * 9 + cc];
+            if (!screen) { if (q === '.') { if (!capOnly) out.push(f << 7 | (rr * 9 + cc)); } else screen = true; }
+            else if (q !== '.') { if (sideOf(q) !== s) out.push(f << 7 | (rr * 9 + cc)); break; }
+            rr += dr; cc += dc;
+          }
+        }
+      } else if (t === 'p') {
+        const fw = s === 1 ? -1 : 1;
+        if (inB(r + fw, c)) add(f, (r + fw) * 9 + c);
+        if (crossed(r, s)) for (const dc of [-1, 1]) if (inB(r, c + dc)) add(f, r * 9 + c + dc);
+      }
+    }
+    return out;
+  }
+  legal(s) {
+    if (s === undefined) s = this.side;
+    return this.gen(false, s).filter(m => { this.make(m); const ok = !this.inCheck(s); this.unmake(); return ok; });
+  }
+  isRepeat() {
+    const h = this.hist, n = h.length;
+    for (let i = n - 2, k = 0; i >= 0 && k < 10; i -= 2, k++) if (h[i] === this.h1) return true;
+    return false;
+  }
+}
+
+function evaluate(pos) {
+  let s = 0; const b = pos.b;
+  for (let i = 0; i < 90; i++) {
+    const p = b[i]; if (p === '.') continue;
+    const t = p.toLowerCase();
+    if (p < 'a') s += VAL[t] + PST[t][i];
+    else { const r = (i / 9) | 0, c = i % 9; s -= VAL[t] + PST[t][(9 - r) * 9 + c]; }
+  }
+  return s * pos.side + 10;
+}
+
+// ===== search =====
+const ABORT = { abort: true };
+let TT = new Map();
+function attackerVal(p) { const t = p.toLowerCase(); return t === 'k' ? 50 : VAL[t]; }
+
+function orderMoves(pos, moves, ttMove, S, ply) {
+  const k = S.killers[ply] || [];
+  const sc = moves.map(m => {
+    if (m === ttMove) return 1e8;
+    const cap = pos.b[m & 127];
+    if (cap !== '.') return 1e7 + VAL[cap.toLowerCase()] * 10 - attackerVal(pos.b[m >> 7]) / 10;
+    if (m === k[0]) return 9e6; if (m === k[1]) return 8e6;
+    return S.hist[m] || 0;
+  });
+  const idx = moves.map((_, i) => i).sort((a, b) => sc[b] - sc[a]);
+  return idx.map(i => moves[i]);
+}
+
+function qs(pos, alpha, beta, ply, S, qd) {
+  if ((++S.nodes & 1023) === 0 && S.canAbort && Date.now() > S.deadline) throw ABORT;
+  const stand = evaluate(pos);
+  if (stand >= beta) return stand;
+  if (stand > alpha) alpha = stand;
+  if (qd >= 6) return stand;
+  const mover = pos.side;
+  const moves = orderMoves(pos, pos.gen(true), 0, S, 60);
+  for (const m of moves) {
+    pos.make(m);
+    if (pos.inCheck(mover)) { pos.unmake(); continue; }
+    const sc = -qs(pos, -beta, -alpha, ply + 1, S, qd + 1);
+    pos.unmake();
+    if (sc >= beta) return sc;
+    if (sc > alpha) alpha = sc;
+  }
+  return alpha;
+}
+
+function negamax(pos, depth, alpha, beta, ply, S) {
+  if ((++S.nodes & 1023) === 0 && S.canAbort && Date.now() > S.deadline) throw ABORT;
+  if (ply > 0 && pos.isRepeat()) return 0;
+  const mover = pos.side;
+  const inChk = pos.inCheck(mover);
+  if (inChk && ply < 24) depth++;
+  if (depth <= 0) return qs(pos, alpha, beta, ply, S, 0);
+  const e = TT.get(pos.h1); let ttMove = 0;
+  if (e && e.h2 === pos.h2) {
+    ttMove = e.m;
+    if (e.d >= depth && ply > 0) {
+      let s = e.s; if (s > MATE - 500) s -= ply; else if (s < -MATE + 500) s += ply;
+      if (e.f === 0) return s;
+      if (e.f === 1 && s >= beta) return s;
+      if (e.f === 2 && s <= alpha) return s;
+    }
+  }
+  const moves = orderMoves(pos, pos.gen(false), ttMove, S, ply);
+  let best = -MATE - 1, bestM = 0, legal = 0; const a0 = alpha;
+  for (const m of moves) {
+    pos.make(m);
+    if (pos.inCheck(mover)) { pos.unmake(); continue; }
+    legal++;
+    const sc = -negamax(pos, depth - 1, -beta, -alpha, ply + 1, S);
+    pos.unmake();
+    if (sc > best) {
+      best = sc; bestM = m;
+      if (sc > alpha) {
+        alpha = sc;
+        if (sc >= beta) {
+          if (pos.b[m & 127] === '.') {
+            const k = S.killers[ply] || (S.killers[ply] = [0, 0]);
+            if (k[0] !== m) { k[1] = k[0]; k[0] = m; }
+            S.hist[m] = (S.hist[m] || 0) + depth * depth;
+          }
+          break;
+        }
+      }
+    }
+  }
+  if (legal === 0) return -MATE + ply;
+  let st = best; if (st > MATE - 500) st += ply; else if (st < -MATE + 500) st -= ply;
+  if (TT.size > 400000) TT = new Map();
+  TT.set(pos.h1, { h2: pos.h2, d: depth, s: st, f: best <= a0 ? 2 : best >= beta ? 1 : 0, m: bestM });
+  return best;
+}
+
+function rootSearch(pos, depth, S, prevBest, rootMoves) {
+  let alpha = -MATE - 1, best = -MATE - 1, bestM = 0;
+  const moves = prevBest ? [prevBest, ...rootMoves.filter(m => m !== prevBest)] : orderMoves(pos, rootMoves, 0, S, 0);
+  for (const m of moves) {
+    pos.make(m);
+    const sc = -negamax(pos, depth - 1, -MATE - 1, -alpha, 1, S);
+    pos.unmake();
+    if (sc > best) { best = sc; bestM = m; }
+    if (sc > alpha) alpha = sc;
+  }
+  return { m: bestM, s: best };
+}
+
+function extractPV(pos, first, n) {
+  const pv = [first]; let made = 0;
+  pos.make(first); made++;
+  while (pv.length < n) {
+    const e = TT.get(pos.h1);
+    if (!e || e.h2 !== pos.h2 || !e.m) break;
+    if (!pos.legal().includes(e.m)) break;
+    pv.push(e.m); pos.make(e.m); made++;
+    if (pos.isRepeat()) break;
+  }
+  while (made--) pos.unmake();
+  return pv;
+}
+
+// think: returns {m, s, d, pv} — s from side-to-move perspective
+function think(pos, opt) {
+  opt = opt || {};
+  const maxDepth = opt.depth || 4, time = opt.time || 1000;
+  const rootMoves = pos.legal();
+  if (!rootMoves.length) return null;
+  const S = { nodes: 0, deadline: Date.now() + time, killers: [], hist: {}, canAbort: false };
+  let best = null; const base = pos.stack.length;
+  for (let d = 1; d <= maxDepth; d++) {
+    S.canAbort = d > 1;
+    try {
+      const r = rootSearch(pos, d, S, best ? best.m : 0, rootMoves);
+      best = { m: r.m, s: r.s, d };
+      if (Math.abs(r.s) > MATE - 200) break;
+    } catch (e) { while (pos.stack.length > base) pos.unmake(); if (e !== ABORT) throw e; break; }
+    if (Date.now() > S.deadline) break;
+  }
+  if (opt.noise && rootMoves.length > 1) {
+    // weaker play: score every root move shallowly and pick randomly among near-best
+    const scored = rootMoves.map(m => { pos.make(m); const s = -negamax(pos, Math.max(0, (opt.noiseDepth || 1) - 1), -MATE - 1, MATE + 1, 1, { nodes: 0, deadline: 1e15, killers: [], hist: {}, canAbort: false }); pos.unmake(); return { m, s }; });
+    scored.sort((a, b) => b.s - a.s);
+    const top = scored[0].s;
+    const pool = scored.filter(x => x.s >= top - opt.noise);
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    best = { m: pick.m, s: pick.s, d: opt.noiseDepth || 1 };
+  }
+  best.pv = extractPV(pos, best.m, 6);
+  return best;
+}
+
+
+
+</script>
+<script>
+// ================= App =================
+const LEVELS=[
+  {name:'Nhập môn',desc:'Máy hay đi sai, hợp với người mới làm quen luật',depth:2,time:300,noise:160,noiseDepth:1},
+  {name:'Cơ bản',desc:'Biết ăn quân và tránh mất quân đơn giản',depth:3,time:500,noise:45,noiseDepth:2},
+  {name:'Trung cấp',desc:'Tính trước vài nước, ít sai lầm',depth:4,time:900},
+  {name:'Cao cấp',desc:'Tính sâu, rất khó thắng',depth:9,time:2200},
+];
+const ANA={depth:8,time:750};
+const HAN={K:'帥',A:'仕',B:'相',N:'傌',R:'俥',C:'炮',P:'兵',k:'將',a:'士',b:'象',n:'馬',r:'車',c:'砲',p:'卒'};
+const VNL={k:'Tg',a:'S',b:'T',n:'M',r:'X',c:'P',p:'B'};
+const NAME={k:'Tướng',a:'Sĩ',b:'Tượng',n:'Mã',r:'Xe',c:'Pháo',p:'Tốt'};
+const CLS={best:'Xuất sắc',good:'Tốt',inacc:'Thiếu chính xác',mistake:'Sai lầm',blunder:'Sai lầm lớn'};
+const SIDE_NAME={1:'Đỏ','-1':'Đen'};
+const BUILTIN=[
+  {id:'song-phao',name:'Song pháo',fen:'1n1aka2r/9/9/p1p3p1p/4C4/9/P1P3P1P/1C7/9/R2K5 w',n:1,idea:'Hai Pháo chồng trên cùng một lộ: Pháo trước làm ngòi cho Pháo sau. Hai Sĩ đứng hai bên lại chặn lối thoát của chính Tướng.'},
+  {id:'ngoa-tao',name:'Ngọa tào mã',fen:'r2ak4/4a4/9/3N5/9/5R3/P1P3P1P/9/9/4K4 w',n:1,idea:'Mã nhảy vào “máng” sát cung Tướng. Xe đứng sẵn khống chế ô thoát còn lại.'},
+  {id:'ma-hau-phao',name:'Mã hậu pháo',fen:'r3k3r/9/4N4/p1p3p1p/9/9/P1P3P1P/1C7/9/3K5 w',n:1,idea:'Mã vừa làm ngòi cho Pháo vừa khống chế hai ô cạnh Tướng.'},
+  {id:'song-xe',name:'Song xe',fen:'4k4/9/9/9/R8/8R/9/9/9/3K5 w',n:2,idea:'Hai Xe thay nhau chiếu theo hàng ngang. Tướng đỏ cũng góp sức nhờ luật không được lộ mặt Tướng.'},
+];
+
+const KEY='xq-coach-v1';
+function loadStore(){const d={games:[],tags:{},bank:[],game:null,settings:null,solved:{}};try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return Object.assign(d,s);}catch(e){}return d;}
+let store=loadStore();
+function saveStore(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+
+let settings=Object.assign({threats:true,opps:false,pause:true,vn:false,theme:null},store.settings||{});
+let G=null, PZ=null, busy=false, selected=-1, legalFrom=[], hintStage=0, hintMove=0, hintPiece=-1, animMove=0;
+
+const $=id=>document.getElementById(id);
+const tick=(ms=30)=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ---------- helpers on positions ----------
+function fileOf(c,s){return s===1?9-c:c+1}
+function notate(pos,m){
+  const f=m>>7,t=m&127,p=pos.b[f],s=sideOf(p),ty=p.toLowerCase();
+  const fr=(f/9)|0,fc=f%9,tr=(t/9)|0,tc=t%9;
+  let tag='';
+  const same=[];for(let r=0;r<10;r++)if(pos.b[r*9+fc]===p)same.push(r);
+  if(same.length>=2){same.sort((a,b)=>s===1?a-b:b-a);const i=same.indexOf(fr);tag=i===0?'trước':(i===same.length-1?'sau':'giữa');}
+  const fwd=s===1?fr-tr:tr-fr;
+  let act,num,sym;
+  if(fr===tr){act='bình';sym='-';num=fileOf(tc,s);}
+  else{act=fwd>0?'tiến':'thoái';sym=fwd>0?'.':'/';num='abn'.includes(ty)?fileOf(tc,s):Math.abs(tr-fr);}
+  const long=tag?`${NAME[ty]} ${tag} ${act} ${num}`:`${NAME[ty]} ${fileOf(fc,s)} ${act} ${num}`;
+  const short=tag?`${VNL[ty]}${tag[0]}${sym}${num}`:`${VNL[ty]}${fileOf(fc,s)}${sym}${num}`;
+  return {long,short};
+}
+function pieceVal(p,sq){const t=p.toLowerCase();if(t==='p')return crossed((sq/9)|0,sideOf(p))?200:100;if(t==='k')return 5000;return VAL[t];}
+function hanging(pos,s){
+  const caps=pos.gen(true,-s).filter(m=>{pos.make(m);const ok=!pos.inCheck(-s);pos.unmake();return ok;});
+  const by={};
+  for(const m of caps){const t=m&127;(by[t]=by[t]||[]).push(attackerVal(pos.b[m>>7]));}
+  const res=[];
+  for(const k in by){const sq=+k,p=pos.b[sq];if(p.toLowerCase()==='k')continue;
+    const v=pieceVal(p,sq),minA=Math.min(...by[k]),def=attacked(pos.b,sq,s);
+    if(!def||minA<v)res.push({sq,p,v,def,gain:def?v-minA:v});}
+  return res.sort((a,b)=>b.gain-a.gain);
+}
+function positional(pos,m){
+  const f=m>>7,t=m&127,p=pos.b[f],s=sideOf(p),ty=p.toLowerCase();
+  const fr=(f/9)|0,fc=f%9,tr=(t/9)|0,tc=t%9,home=s===1?9:0;
+  if(ty==='c'&&tc===4&&fc!==4)return 'đặt Pháo vào trung lộ, gây áp lực lên giữa';
+  if(ty==='n'&&fr===home)return 'phát triển Mã ra trận';
+  if(ty==='r'&&fr===home&&(fc===0||fc===8))return 'ra Xe, đưa quân mạnh nhất vào trận';
+  if(ty==='r')return 'đưa Xe tới vị trí hoạt động hơn';
+  if(ty==='p'&&!crossed(fr,s)&&crossed(tr,s))return 'đưa Tốt qua sông';
+  if(ty==='p')return 'tiến Tốt, mở đường cho quân khác';
+  if(ty==='a'||ty==='b')return 'củng cố phòng thủ quanh Tướng';
+  if(ty==='k')return 'đổi vị trí Tướng';
+  if(ty==='n')return 'đưa Mã tới vị trí tốt hơn';
+  if(ty==='c')return 'điều chỉnh vị trí Pháo';
+  return 'cải thiện thế cờ';
+}
+function describe(pos,m){
+  const f=m>>7,t=m&127,p=pos.b[f],s=sideOf(p),cap=pos.b[t];
+  const R=[];
+  const ownBefore=hanging(pos,s), enBefore=hanging(pos,-s);
+  pos.make(m);
+  const chk=pos.inCheck(-s);
+  if(chk&&pos.legal(-s).length===0)R.push('chiếu bí');else if(chk)R.push('chiếu Tướng');
+  if(cap!=='.')R.push('ăn '+NAME[cap.toLowerCase()]);
+  const newT=hanging(pos,-s).filter(x=>x.v>=100&&!enBefore.some(y=>y.sq===x.sq));
+  if(newT.length>=2)R.push('bắt đôi '+newT.slice(0,2).map(x=>NAME[x.p.toLowerCase()]).join(' và '));
+  else if(newT.length===1)R.push('đe doạ ăn '+NAME[newT[0].p.toLowerCase()]);
+  const ownAfter=hanging(pos,s);
+  const saved=ownBefore.filter(x=>{const now=x.sq===f?t:x.sq;return !ownAfter.some(y=>y.sq===now);});
+  if(saved.length&&cap==='.')R.push('giải nguy cho '+NAME[saved[0].p.toLowerCase()]);
+  pos.unmake();
+  if(!R.length)R.push(positional(pos,m));
+  return R;
+}
+function cp(s){if(s>MATE-500)return 3000-(MATE-s)*10;if(s<-MATE+500)return -3000+(MATE+s)*10;return Math.max(-2500,Math.min(2500,s));}
+function wp(s){return 1/(1+Math.exp(-cp(s)/350));}
+function classify(lw){return lw<=0.025?'best':lw<=0.07?'good':lw<=0.15?'inacc':lw<=0.3?'mistake':'blunder';}
+function accOf(lw){return Math.max(0,Math.min(100,103.17*Math.exp(-0.04354*lw*100)-3.17));}
+function cap1(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function pvText(pos,pv){const c=pos.clone();const out=[];for(const m of pv){if(!c.legal().includes(m))break;out.push(notate(c,m).long);c.make(m);}return out.join(', ');}
+
+// ---------- rendering ----------
+const CELL=60,MX=46,MY=46;
+const svg=$('board');
+function curPos(){return PZ?PZ.pos:G.pos;}
+function mySide(){return PZ?PZ.side:G.userSide;}
+function flipped(){return mySide()===-1;}
+function xy(sq){let r=(sq/9)|0,c=sq%9;if(flipped()){r=9-r;c=8-c;}return [MX+c*CELL,MY+r*CELL];}
+let staticFlip=null;
+function drawStatic(){
+  const fl=flipped();staticFlip=fl;
+  let s=`<defs><radialGradient id="pg" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="var(--piece)"/><stop offset="1" stop-color="var(--piece2)"/></radialGradient><marker id="ah" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--focus)"/></marker></defs><g id="static">`;
+  const x0=MX,y0=MY,x1=MX+8*CELL,y1=MY+9*CELL;
+  s+=`<rect class="ln out" x="${x0-6}" y="${y0-6}" width="${x1-x0+12}" height="${y1-y0+12}"/>`;
+  for(let r=0;r<10;r++)s+=`<line class="ln" x1="${x0}" y1="${y0+r*CELL}" x2="${x1}" y2="${y0+r*CELL}"/>`;
+  for(let c=0;c<9;c++){const x=x0+c*CELL;if(c===0||c===8)s+=`<line class="ln" x1="${x}" y1="${y0}" x2="${x}" y2="${y1}"/>`;else{s+=`<line class="ln" x1="${x}" y1="${y0}" x2="${x}" y2="${y0+4*CELL}"/><line class="ln" x1="${x}" y1="${y0+5*CELL}" x2="${x}" y2="${y1}"/>`;}}
+  const pal=(r)=>{const a=x0+3*CELL,b=x0+5*CELL,ya=y0+r*CELL,yb=y0+(r+2)*CELL;return `<line class="ln" x1="${a}" y1="${ya}" x2="${b}" y2="${yb}"/><line class="ln" x1="${b}" y1="${ya}" x2="${a}" y2="${yb}"/>`;};
+  s+=pal(0)+pal(7);
+  const ym=y0+4.5*CELL;
+  s+=`<text class="rv" x="${x0+2*CELL}" y="${ym}" text-anchor="middle" dominant-baseline="central">楚 河</text><text class="rv" x="${x0+6*CELL}" y="${ym}" text-anchor="middle" dominant-baseline="central">漢 界</text>`;
+  const marks=[[2,1],[2,7],[7,1],[7,7],[3,0],[3,2],[3,4],[3,6],[3,8],[6,0],[6,2],[6,4],[6,6],[6,8]];
+  for(const [r,c] of marks){const x=x0+c*CELL,y=y0+r*CELL,g=5,l=11;
+    for(const sx of [-1,1]){if((c===0&&sx<0)||(c===8&&sx>0))continue;for(const sy of [-1,1]){s+=`<path class="mk" d="M${x+sx*g} ${y+sy*(g+l)} L${x+sx*g} ${y+sy*g} L${x+sx*(g+l)} ${y+sy*g}"/>`;}}}
+  // file numbers: top = opponent numbering, bottom = yours
+  const me=mySide();
+  for(let dc=0;dc<9;dc++){const c=fl?8-dc:dc;const x=x0+dc*CELL;
+    s+=`<text class="fl" x="${x}" y="${y0-24}" text-anchor="middle">${fileOf(c,-me)}</text><text class="fl" x="${x}" y="${y1+33}" text-anchor="middle">${fileOf(c,me)}</text>`;}
+  s+=`</g><g id="dyn"></g>`;
+  svg.innerHTML=s;
+}
+function render(){
+  if(staticFlip!==flipped())drawStatic();
+  const pos=curPos(),me=mySide();
+  let s='';
+  // last move
+  const lm=lastMove();
+  if(lm){for(const sq of [lm>>7,lm&127]){const [x,y]=xy(sq);s+=`<rect class="last" x="${x-29}" y="${y-29}" width="58" height="58" rx="6"/>`;}}
+  // check glow
+  for(const sd of [1,-1]){if(pos.inCheck(sd)){const k=sd===1?pos.kr:pos.kb;if(k>=0){const [x,y]=xy(k);s+=`<circle class="chk" cx="${x}" cy="${y}" r="31"/>`;}}}
+  // pieces
+  for(let i=0;i<90;i++){const p=pos.b[i];if(p==='.')continue;const [x,y]=xy(i);const red=p<'a';
+    const lbl=settings.vn?VNL[p.toLowerCase()]:HAN[p];
+    s+=`<g class="pc ${red?'r':'b'}${settings.vn?' vn':''}" data-sq="${i}" transform="translate(${x} ${y})"><g class="mvw"><circle class="shadow" cx="1.5" cy="3" r="26"/><circle class="base" r="26"/><circle class="ring" r="21.5"/><text y="1"${settings.vn&&p.toLowerCase()==='k'?' style="font-size:17px"':''}>${lbl}</text></g></g>`;}
+  // overlays
+  const myTurn=pos.side===me;
+  if(myTurn&&!isFrozen()){
+    if(settings.threats)for(const h of hanging(pos,me)){const [x,y]=xy(h.sq);s+=`<circle class="thr" cx="${x}" cy="${y}" r="29.5"/>`;}
+    if(settings.opps)for(const h of hanging(pos,-me)){const [x,y]=xy(h.sq);s+=`<circle class="opp" cx="${x}" cy="${y}" r="29.5"/>`;}
+  }
+  if(selected>=0){const [x,y]=xy(selected);s+=`<circle class="sel" cx="${x}" cy="${y}" r="28.5"/>`;
+    for(const m of legalFrom){const t=m&127;const [tx,ty]=xy(t);s+=pos.b[t]==='.'?`<circle class="tgt" cx="${tx}" cy="${ty}" r="8"/>`:`<circle class="tgtc" cx="${tx}" cy="${ty}" r="29"/>`;}}
+  if(hintPiece>=0&&!hintMove){const [x,y]=xy(hintPiece);s+=`<circle class="hintp" cx="${x}" cy="${y}" r="30"/>`;}
+  if(hintMove){const [x1,y1]=xy(hintMove>>7),[x2,y2]=xy(hintMove&127);const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy);const ux=dx/L,uy=dy/L;
+    s+=`<line class="arrow" x1="${x1+ux*18}" y1="${y1+uy*18}" x2="${x2-ux*22}" y2="${y2-uy*22}" marker-end="url(#ah)"/>`;}
+  $('dyn').innerHTML=s;
+  // animation
+  if(animMove&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const t=animMove&127,g=svg.querySelector(`.pc[data-sq="${t}"] .mvw`);
+    if(g&&g.animate){const [x1,y1]=xy(animMove>>7),[x2,y2]=xy(t);g.animate([{transform:`translate(${x1-x2}px,${y1-y2}px)`},{transform:'translate(0,0)'}],{duration:220,easing:'cubic-bezier(.3,.7,.3,1)'});}
+  }
+  animMove=0;
+  renderMoves();updateButtons();
+}
+function lastMove(){const p=curPos();return p.stack.length?p.stack[p.stack.length-1].m:0;}
+function isFrozen(){return busy||(!PZ&&(G.over||G.paused))||(PZ&&PZ.done);}
+function setStatus(t,opt={}){const el=$('status');el.className=opt.alert?'alert':'';el.innerHTML=(opt.spin?'<span class="spinner"></span>':'')+esc(t);}
+function setEval(redScore){
+  const w=wp(redScore);$('evalfill').style.width=(w*100).toFixed(1)+'%';
+  let t;
+  if(redScore>MATE-500)t='Đỏ thắng sau '+Math.ceil((MATE-redScore)/2)+' nước';
+  else if(redScore<-MATE+500)t='Đen thắng sau '+Math.ceil((MATE+redScore)/2)+' nước';
+  else{const v=cp(redScore)/100;t=Math.abs(v)<0.3?'Cân bằng':(v>0?'Đỏ +':'Đen +')+Math.abs(v).toFixed(1);}
+  $('evaltxt').textContent=t;
+}
+function turnStatus(){
+  if(PZ){if(PZ.done){setStatus('Đã giải xong bài tập');return;}setStatus('Lượt bạn ('+SIDE_NAME[PZ.side]+')');return;}
+  if(G.over){setStatus(G.over.text);return;}
+  if(G.paused){setStatus('Đọc nhận xét, rồi chọn Thử lại hoặc Tiếp tục');return;}
+  const pos=G.pos;
+  if(pos.side===G.userSide){if(pos.inCheck(G.userSide))setStatus('Bạn đang bị chiếu! Hãy giải chiếu.',{alert:true});else setStatus('Lượt bạn ('+SIDE_NAME[G.userSide]+')');}
+  else setStatus('Máy đang suy nghĩ…',{spin:true});
+}
+function updateButtons(){
+  $('bHint').disabled=busy||isFrozen()||curPos().side!==mySide();
+  $('bUndo').disabled=busy||!!PZ||!G.log.some(e=>e.who==='user');
+}
+
+// ---------- feed ----------
+function syncLatest(){const L=$('latest');if(!L)return;L.innerHTML='';[...$('feed').children].slice(0,2).forEach(c=>L.appendChild(c.cloneNode(true)));}
+function addCard(cls,html){const el=document.createElement('article');el.className='card c-'+cls;el.innerHTML=html;$('feed').prepend(el);syncLatest();return el;}
+function clearFeed(){$('feed').innerHTML='';syncLatest();}
+function clearPauseActs(){document.querySelectorAll('.acts[data-pause]').forEach(a=>a.remove());}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||!G||!G.paused)return;clearPauseActs();if(b.dataset.act==='retry')retry();else{G.paused=null;aiTurn();}});
+
+// ---------- game ----------
+function newGame(side,level){
+  PZ=null;$('pzb').className='pzbanner';
+  G={pos:new Pos(),start:START_FEN,userSide:side,level,log:[],moves:[],over:null,paused:null,hints:0,tips:{},pre:null};
+  selected=-1;legalFrom=[];hintStage=0;hintMove=0;hintPiece=-1;
+  clearFeed();
+  addCard('info',`<p><b>Ván mới:</b> bạn cầm ${SIDE_NAME[side]}, máy ở mức ${LEVELS[level].name}.</p><p>Sau mỗi nước, thầy sẽ chấm điểm và giải thích. Vòng đỏ nét đứt là quân của bạn đang bị đe doạ. Bấm <b>Gợi ý</b> một lần để biết nên chú ý quân nào, bấm lần nữa để xem nước đi cụ thể.</p><p class="tip">Thói quen quan trọng nhất: trước mỗi nước, hãy hỏi “đối phương vừa đi để làm gì?” và “sau nước của mình, họ ăn được gì?”.</p>`);
+  setEval(0);$('sub').textContent=`${SIDE_NAME[side]} · ${LEVELS[level].name}`;
+  saveGame();render();turnStatus();
+  if(side===-1)aiTurn();
+}
+function saveGame(){store.game={start:G.start,moves:G.moves,userSide:G.userSide,level:G.level,log:G.log,hints:G.hints,tips:G.tips,over:G.over};store.settings=settings;saveStore();}
+function restoreGame(){
+  const g=store.game;if(!g)return false;
+  try{
+    G={pos:new Pos(g.start),start:g.start,userSide:g.userSide,level:g.level,log:g.log||[],moves:[],over:g.over||null,paused:null,hints:g.hints||0,tips:g.tips||{},pre:null};
+    for(const m of g.moves){if(!G.pos.legal().includes(m))throw 0;G.pos.make(m);G.moves.push(m);}
+  }catch(e){return false;}
+  $('sub').textContent=`${SIDE_NAME[G.userSide]} · ${LEVELS[G.level].name}`;
+  addCard('info',`<p>Đã mở lại ván bạn đang chơi dở (${G.moves.length} nước). Bấm <b>Ván mới</b> nếu muốn chơi ván khác.</p>`);
+  return true;
+}
+
+function onSquare(sq){
+  if(isFrozen())return;
+  const pos=curPos(),me=mySide();
+  if(pos.side!==me)return;
+  if(selected>=0){const m=selected<<7|sq;if(legalFrom.includes(m)){selected=-1;legalFrom=[];play(m);return;}}
+  if(sideOf(pos.b[sq])===me&&sq!==selected){selected=sq;legalFrom=pos.legal().filter(x=>(x>>7)===sq);}
+  else{selected=-1;legalFrom=[];}
+  render();
+}
+svg.addEventListener('click',e=>{
+  const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+  const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+  let c=Math.round((p.x-MX)/CELL),r=Math.round((p.y-MY)/CELL);
+  if(r<0||r>9||c<0||c>8)return;
+  if(Math.hypot(p.x-(MX+c*CELL),p.y-(MY+r*CELL))>30)return;
+  if(flipped()){r=9-r;c=8-c;}
+  onSquare(r*9+c);
+});
+
+function play(m){if(PZ)puzzleMove(m);else userMove(m);}
+
+function getPre(pos){
+  if(G.pre&&G.pre.h1===pos.h1&&G.pre.h2===pos.h2)return G.pre.an;
+  const an=think(pos,ANA);G.pre={h1:pos.h1,h2:pos.h2,an};return an;
+}
+
+async function userMove(m){
+  busy=true;hintMove=0;hintPiece=-1;hintStage=0;
+  const pos=G.pos,s=G.userSide;
+  setStatus('Đang phân tích nước đi của bạn…',{spin:true});render();await tick();
+  const fenBefore=pos.fen();
+  const an=getPre(pos);
+  const nt=notate(pos,m);
+  const capUser=pos.b[m&127];
+  const bestNt=notate(pos,an.m),bestCap=pos.b[an.m&127],bestR=describe(pos,an.m),userR=describe(pos,m);
+  const bestPV=an.pv&&an.pv.length>1?pvText(pos,an.pv.slice(0,4)):'';
+  const tips=openingTips(pos,m);
+  const userIdx=G.log.filter(e=>e.who==='user').length+1;
+  pos.make(m);G.moves.push(m);animMove=m;render();await tick();
+  let rep=null,userS;
+  const oppMoves=pos.legal();
+  if(!oppMoves.length)userS=MATE-1;
+  else{rep=think(pos,{depth:Math.max(2,an.d-1),time:ANA.time});userS=-rep.s;}
+  if(m===an.m)userS=Math.max(userS,an.s);
+  const lw=m===an.m?0:Math.max(0,wp(an.s)-wp(userS));
+  const cls=classify(lw),acc=accOf(lw);
+  setEval(userS*s);
+  // ----- build explanation -----
+  const msgs=[],tags=[];
+  const repNt=rep?notate(pos,rep.m):null,repCap=rep?pos.b[rep.m&127]:'.';
+  if(cls==='best'||cls==='good'){
+    msgs.push(m===an.m?`Đúng nước mạnh nhất: ${userR.join(', ')}.`:`Nước đi tốt: ${userR.join(', ')}.`);
+    if(cls==='good'&&m!==an.m)msgs.push(`Mạnh hơn một chút là ${bestNt.long} (${bestR.join(', ')}).`);
+  }else{
+    if(an.s>MATE-200&&userS<MATE-200){tags.push('mate');msgs.push(`Bạn bỏ lỡ đòn chiếu bí: ${bestNt.long} dẫn tới chiếu bí sau ${Math.ceil((MATE-an.s)/2)} nước.`);}
+    if(userS<-MATE+200&&an.s>-MATE+200){tags.push('mate');msgs.push(`Nước này mở đường cho đối phương chiếu bí, họ có ${repNt.long}.`);}
+    else if(rep&&repCap!=='.'&&lw>0.07){tags.push('hang');msgs.push(`Đối phương có thể đáp ${repNt.long} để ăn ${NAME[repCap.toLowerCase()]} của bạn.${capUser!=='.'?' Cuộc đổi quân này không có lợi cho bạn.':''}`);}
+    else if(rep){msgs.push(`Sau nước này, đối phương có ${repNt.long} (${describe(pos,rep.m).join(', ')}).`);tags.push('pos');}
+    if(bestCap!=='.'&&capUser==='.'&&!tags.includes('mate')){tags.push('miss');msgs.push(`Bạn bỏ lỡ cơ hội: ${bestNt.long} ăn được ${NAME[bestCap.toLowerCase()]}.`);}
+    else if(!(an.s>MATE-200))msgs.push(`Nước tốt hơn: ${bestNt.long} (${bestR.join(', ')}).${bestPV?' Diễn biến dự kiến: '+bestPV+'.':''}`);
+    const lossCp=cp(an.s)-cp(userS);
+    if(lossCp>=60&&Math.abs(lossCp)<2000)msgs.push(`<span class="muted">Nước này thiệt khoảng ${(lossCp/100).toFixed(1)} điểm (1 điểm ≈ 1 Tốt chưa qua sông).</span>`);
+    if(tags.includes('hang'))msgs.push(`<span class="tip">Trước khi đi, hãy tự hỏi: “Sau nước này, đối phương ăn được quân nào của mình?”</span>`);
+    else if(tags.includes('miss'))msgs.push(`<span class="tip">Mỗi lượt, hãy rà soát theo thứ tự: nước chiếu, nước ăn quân, nước đe doạ.</span>`);
+  }
+  for(const t of tips){msgs.push(`<span class="tip"><b>Nguyên tắc:</b> ${t}</span>`);tags.push('opening');}
+  const entry={who:'user',m,short:nt.short,long:nt.long,cls,lw,acc,tags};
+  G.log.push(entry);
+  if((cls==='mistake'||cls==='blunder')){store.bank=store.bank.filter(b=>b.fen!==fenBefore);store.bank.push({fen:fenBefore,best:an.m,played:m,lw,date:Date.now(),label:nt.long});if(store.bank.length>60)store.bank.shift();}
+  const card=addCard(cls,`<header><span class="badge">${CLS[cls]}</span><span class="mv">${userIdx}. ${esc(nt.long)}</span><span class="meta">chính xác ${Math.round(acc)}%</span></header>${msgs.map(x=>`<p>${x}</p>`).join('')}`);
+  const end=endState();
+  if(end){finish(end);busy=false;render();return;}
+  if(settings.pause&&(cls==='mistake'||cls==='blunder')){
+    G.paused={m};busy=false;
+    const acts=document.createElement('div');acts.className='acts';acts.dataset.pause='1';
+    acts.innerHTML=`<button class="btn small primary" data-act="retry">Thử lại nước khác</button><button class="btn small" data-act="go">Tiếp tục</button>`;
+    card.appendChild(acts);syncLatest();
+    turnStatus();render();saveGame();return;
+  }
+  await aiTurn();
+}
+function retry(){
+  if(!G.paused)return;
+  clearPauseActs();
+  G.pos.unmake();G.moves.pop();G.log.pop();G.paused=null;
+  addCard('info','<p>Đã trả lại nước vừa rồi. Hãy tìm nước tốt hơn — có thể bấm <b>Gợi ý</b> nếu cần.</p>');
+  saveGame();render();turnStatus();
+}
+function openingTips(pos,m){
+  const s=G.userSide,f=m>>7,t=m&127,p=pos.b[f],ty=p.toLowerCase(),k=G.log.filter(e=>e.who==='user').length+1;
+  const out=[],cap=pos.b[t];
+  const add=(id,txt)=>{if(!G.tips[id]){G.tips[id]=1;out.push(txt);}};
+  if(G.start!==START_FEN)return out;
+  if(ty==='k'&&k<=12&&!pos.inCheck(s))add('king','Hạn chế di chuyển Tướng ở khai cuộc khi không bị đe doạ — Tướng nên được Sĩ, Tượng che chắn.');
+  const prev=[...G.log].reverse().find(e=>e.who==='user');
+  if(prev&&k<=7&&(prev.m&127)===f&&cap==='.'&&!pos.inCheck(s))add('twice','Ở khai cuộc, hãy ưu tiên đưa nhiều quân ra trận thay vì đi một quân nhiều lần.');
+  if(ty==='p'&&k<=5&&(f%9===0||f%9===8))add('edge','Tốt biên ít tác dụng ở đầu ván; thường nên ra Mã, Pháo, Xe trước.');
+  const home=s===1?9:0,R=s===1?'R':'r';
+  if(k>=7&&pos.b[home*9]===R&&pos.b[home*9+8]===R&&!(ty==='r'))add('rook','Cả hai Xe vẫn nằm ở góc. Xe là quân mạnh nhất — hãy ra Xe sớm (thường trong khoảng 5 nước đầu).');
+  return out;
+}
+async function aiTurn(){
+  busy=true;turnStatus();render();await tick(60);
+  const pos=G.pos,L=LEVELS[G.level];
+  const r=think(pos,L);
+  if(!r){busy=false;return;}
+  const m=r.m,nt=notate(pos,m),why=describe(pos,m);
+  pos.make(m);G.moves.push(m);G.log.push({who:'ai',m,short:nt.short,long:nt.long});animMove=m;render();
+  const end=endState();
+  if(end){finish(end);busy=false;render();return;}
+  const warn=[];
+  if(pos.inCheck(G.userSide))warn.push('<b>Bạn đang bị chiếu</b> — nước tiếp theo phải giải chiếu.');
+  const h=hanging(pos,G.userSide);
+  if(h.length&&settings.threats)warn.push(`Chú ý: ${h.slice(0,3).map(x=>NAME[x.p.toLowerCase()]).join(', ')} của bạn đang bị đe doạ (vòng đỏ trên bàn cờ).`);
+  addCard('ai',`<p><b>Máy:</b> ${esc(nt.long)} <span class="muted">(${why.join(', ')})</span></p>${warn.map(w=>`<p>${w}</p>`).join('')}`);
+  await tick(20);
+  const an=getPre(pos);setEval(an.s*pos.side);
+  busy=false;saveGame();render();turnStatus();
+}
+function endState(){
+  const pos=G.pos;
+  if(pos.legal().length===0){const loser=pos.side;return {winner:-loser,reason:pos.inCheck(loser)?'chiếu bí':'hết nước đi'};}
+  let cnt=0;for(const h of pos.hist)if(h===pos.h1)cnt++;
+  if(cnt>=2)return {winner:0,reason:'thế cờ lặp lại ba lần'};
+  if(!pos.b.some(p=>'RNCPrncp'.includes(p)&&p!=='.'))return {winner:0,reason:'hai bên không còn quân tấn công'};
+  if(G.moves.length>=300)return {winner:0,reason:'quá 150 nước mỗi bên'};
+  return null;
+}
+function finish(end){
+  const res=end.winner===0?'draw':(end.winner===G.userSide?'win':'loss');
+  const text=res==='win'?`Bạn thắng (${end.reason})!`:res==='loss'?`Bạn thua (${end.reason}).`:`Hoà (${end.reason}).`;
+  G.over={res,text};
+  const um=G.log.filter(e=>e.who==='user');
+  const acc=um.length?um.reduce((a,e)=>a+e.acc,0)/um.length:0;
+  const cnt={best:0,good:0,inacc:0,mistake:0,blunder:0};const tg={};
+  for(const e of um){cnt[e.cls]++;for(const t of e.tags||[])tg[t]=(tg[t]||0)+1;}
+  for(const t in tg)store.tags[t]=(store.tags[t]||0)+tg[t];
+  store.games.push({date:Date.now(),side:G.userSide,level:G.level,res,acc:Math.round(acc),n:um.length,hints:G.hints,cnt});
+  if(store.games.length>200)store.games.shift();
+  const adv=[];
+  if(tg.hang)adv.push(`Bạn để mất quân ${tg.hang} lần. Luyện thói quen “kiểm tra an toàn”: trước khi buông quân, nhìn lại mọi quân đối phương xem quân nào ăn được quân mình.`);
+  if(tg.miss)adv.push(`Bạn bỏ lỡ ${tg.miss} cơ hội ăn quân. Mỗi lượt hãy rà Chiếu – Ăn – Doạ trước khi nghĩ tới nước bình thường.`);
+  if(tg.mate)adv.push('Có những thời điểm liên quan đến chiếu bí bị bỏ qua. Hãy làm các bài sát cục trong tab Bài tập.');
+  if(tg.opening)adv.push('Xem lại phần Nguyên tắc khai cuộc trong tab Bài học.');
+  if(!adv.length)adv.push(acc>=80?'Ván đấu rất chắc chắn. Hãy thử tăng trình độ của máy.':'Hãy xem lại các nước có chấm cam, đỏ trong tab Nước đi.');
+  if(store.bank.length)adv.push(`Các nước sai đã được lưu vào tab Bài tập để bạn luyện lại.`);
+  addCard('end',`<header><span class="mv">${esc(text)}</span></header><p>Độ chính xác của bạn: <b>${Math.round(acc)}%</b> qua ${um.length} nước. Xuất sắc ${cnt.best}, tốt ${cnt.good}, thiếu chính xác ${cnt.inacc}, sai lầm ${cnt.mistake}, sai lầm lớn ${cnt.blunder}. Đã dùng ${G.hints} lần gợi ý.</p>${adv.map(a=>`<p class="tip">${a}</p>`).join('')}<div class="acts"><button class="btn small primary" onclick="openNew()">Chơi ván mới</button></div>`);
+  saveGame();saveStore();turnStatus();renderProgress();renderPuzzles();
+}
+function undo(){
+  if(busy||PZ)return;
+  if(G.paused){retry();return;}
+  let ok=false;
+  while(G.log.length){const e=G.log[G.log.length-1];G.pos.unmake();G.log.pop();G.moves.pop();if(e.who==='user'){ok=true;break;}}
+  if(!ok)return;
+  G.over=null;selected=-1;legalFrom=[];hintMove=0;hintPiece=-1;hintStage=0;
+  addCard('info','<p>Đã đi lại một lượt.</p>');
+  saveGame();render();turnStatus();
+}
+async function hint(){
+  if(busy||isFrozen())return;
+  const pos=curPos();if(pos.side!==mySide())return;
+  busy=true;setStatus('Đang tìm nước tốt nhất…',{spin:true});await tick();
+  let an;
+  if(PZ){an=PZ.kind==='review'?PZ.an:think(pos,{depth:2*PZ.n-1,time:3000});}
+  else{an=getPre(pos);G.hints++;}
+  busy=false;
+  hintStage=Math.min(2,hintStage+1);
+  const why=describe(pos,an.m);
+  if(hintStage===1){hintPiece=an.m>>7;addCard('hint',`<p><b>Gợi ý 1:</b> Hãy chú ý quân ${NAME[pos.b[an.m>>7].toLowerCase()]} được khoanh xanh. Ý tưởng: ${why.join(', ')}.</p><p class="muted">Bấm Gợi ý lần nữa để xem nước cụ thể.</p>`);}
+  else{hintMove=an.m;const pv=an.pv&&an.pv.length>1?pvText(pos,an.pv.slice(0,5)):'';addCard('hint',`<p><b>Gợi ý 2:</b> ${esc(notate(pos,an.m).long)} (${why.join(', ')}).</p>${pv?`<p class="muted">Diễn biến dự kiến: ${esc(pv)}.</p>`:''}`);}
+  render();turnStatus();if(!PZ)saveGame();
+}
+
+// ---------- puzzles ----------
+async function startPuzzle(def){
+  if(busy)return;
+  PZ={def,pos:new Pos(def.fen),done:false,kind:def.kind||'mate',n:def.n||1};
+  PZ.side=PZ.pos.side;
+  selected=-1;legalFrom=[];hintMove=0;hintPiece=-1;hintStage=0;
+  const b=$('pzb');b.className='pzbanner on';
+  const goal=PZ.kind==='mate'?`${SIDE_NAME[PZ.side]} đi, chiếu bí trong ${PZ.n} nước`:`${SIDE_NAME[PZ.side]} đi: tìm nước tốt hơn nước bạn đã chơi (${esc(def.label||'')})`;
+  b.innerHTML=`<b>Bài tập: ${esc(def.name)}</b><span class="muted">${goal}</span><div class="row"><button class="btn small" id="pzAns">Xem đáp án</button><button class="btn small" id="pzExit">Thoát bài tập</button></div>`;
+  $('pzAns').onclick=showAnswer;$('pzExit').onclick=exitPuzzle;
+  selectTab('coach');
+  addCard('info',`<p><b>Bài tập ${esc(def.name)}.</b> ${def.idea?esc(def.idea):''}</p>`);
+  render();turnStatus();
+  if(PZ.kind==='review'){busy=true;setStatus('Đang chuẩn bị bài tập…',{spin:true});await tick();PZ.an=think(PZ.pos,{depth:8,time:1200});busy=false;turnStatus();render();}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function exitPuzzle(){PZ=null;$('pzb').className='pzbanner';selected=-1;legalFrom=[];hintMove=0;hintPiece=-1;hintStage=0;staticFlip=null;render();turnStatus();addCard('info','<p>Đã quay lại ván đấu.</p>');}
+async function showAnswer(){
+  if(!PZ||busy||PZ.done)return;hintStage=1;await hint();
+}
+async function puzzleMove(m){
+  busy=true;hintMove=0;hintPiece=-1;hintStage=0;
+  const pos=PZ.pos,nt=notate(pos,m);
+  if(PZ.kind==='review'){
+    const an=PZ.an,why=describe(pos,m);
+    pos.make(m);animMove=m;render();setStatus('Đang kiểm tra…',{spin:true});await tick();
+    let ok=m===an.m,rep=null,userS=MATE-1;
+    if(!ok){if(pos.legal().length){rep=think(pos,{depth:Math.max(2,an.d-1),time:900});userS=-rep.s;}ok=wp(an.s)-wp(userS)<=0.04;}
+    if(ok){PZ.done=true;store.bank=store.bank.filter(b=>b.fen!==PZ.def.fen);store.solved[PZ.def.fen.slice(0,40)]=1;saveStore();
+      addCard('best',`<header><span class="badge">Chính xác</span><span class="mv">${esc(nt.long)}</span></header><p>${cap1(why.join(', '))}. Thế cờ này đã được gỡ khỏi danh sách cần luyện.</p><div class="acts"><button class="btn small primary" onclick="nextReview()">Bài tiếp theo</button></div>`);renderPuzzles();}
+    else{addCard('mistake',`<header><span class="badge">Chưa đúng</span><span class="mv">${esc(nt.long)}</span></header><p>${rep?`Đối phương có thể đáp ${esc(notate(pos,rep.m).long)} (${describe(pos,rep.m).join(', ')}).`:''} Thử lại nhé.</p>`);
+      await tick(900);pos.unmake();}
+    busy=false;render();turnStatus();return;
+  }
+  pos.make(m);animMove=m;render();await tick(60);
+  const replies=pos.legal();
+  if(!replies.length){PZ.done=true;store.solved[PZ.def.id]=1;saveStore();renderPuzzles();
+    addCard('best',`<header><span class="badge">Chiếu bí!</span><span class="mv">${esc(nt.long)}</span></header><p>${esc(PZ.def.idea||'')}</p>`);busy=false;render();turnStatus();return;}
+  if(PZ.n>1){
+    setStatus('Đang kiểm tra…',{spin:true});await tick();
+    const r=think(pos,{depth:2*PZ.n-1,time:3000});
+    if(r&&r.s<=-MATE+2*(PZ.n-1)){
+      const rn=notate(pos,r.m);await tick(350);pos.make(r.m);animMove=r.m;PZ.n--;
+      addCard('good',`<header><span class="badge">Đúng hướng</span><span class="mv">${esc(nt.long)}</span></header><p>Đối phương đáp ${esc(rn.long)}. Tiếp tục: chiếu bí trong ${PZ.n} nước.</p>`);
+      busy=false;render();turnStatus();return;
+    }
+  }
+  const chk=pos.inCheck(pos.side);
+  addCard('mistake',`<header><span class="badge">Chưa đúng</span><span class="mv">${esc(nt.long)}</span></header><p>${chk?'Nước này có chiếu nhưng Tướng đối phương vẫn còn đường thoát hoặc có quân che, ăn.':'Nước này chưa tạo được đòn quyết định. Gợi ý: sát cục thường bắt đầu bằng một nước chiếu.'} Thử lại nhé.</p>`);
+  await tick(900);pos.unmake();busy=false;render();turnStatus();
+}
+function nextReview(){const list=store.bank;if(!list.length){exitPuzzle();return;}const b=list[Math.floor(Math.random()*list.length)];startPuzzle({name:'Sửa sai lầm của bạn',fen:b.fen,kind:'review',label:b.label});}
+
+// ---------- side panels ----------
+function renderMoves(){
+  const body=$('mvbody');if(!G)return;
+  const startRed=new Pos(G.start).side===1;
+  let rows=[],cur=null,n=0;
+  const cell=e=>`${e.who==='user'?`<span class="dot ${e.cls}" title="${CLS[e.cls]}"></span>`:'<span class="dot"></span>'}${esc(e.short)}`;
+  let redTurn=startRed;
+  for(const e of G.log){
+    if(redTurn){n++;cur=[n,cell(e),''];rows.push(cur);}
+    else{if(!cur){n++;cur=[n,'…',''];rows.push(cur);}cur[2]=cell(e);cur=null;}
+    redTurn=!redTurn;
+  }
+  body.innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">Chưa có nước nào.</td></tr>';
+}
+function renderPuzzles(){
+  const el=$('t-puzzles');
+  let s=`<h3>Sát cục cơ bản</h3><p class="muted" style="margin:0">Mỗi thế là một mẫu chiếu bí kinh điển — nhận ra mẫu là thắng nhanh hơn.</p><div class="pzlist">`;
+  BUILTIN.forEach((p,i)=>{s+=`<button class="pzitem" data-b="${i}"><span><span class="t">${esc(p.name)}</span><br><span class="d">Chiếu bí trong ${p.n} nước</span></span>${store.solved[p.id]?'<span class="ok">Đã giải</span>':''}</button>`;});
+  s+=`</div><h3>Sửa sai lầm của chính bạn</h3>`;
+  if(store.bank.length){
+    s+=`<p class="muted" style="margin:0">Mỗi khi bạn đi sai, thế cờ được lưu lại. Giải đúng thì thế đó được gỡ khỏi danh sách. Đây là cách luyện hiệu quả nhất vì nó nhắm đúng điểm yếu của bạn.</p><div class="pzlist"><button class="pzitem" id="pzRandom"><span><span class="t">Luyện ngẫu nhiên (${store.bank.length} thế)</span><br><span class="d">Tìm nước đúng ở những chỗ bạn từng đi sai</span></span></button>`;
+    store.bank.slice(-8).reverse().forEach((b,i)=>{const d=new Date(b.date);s+=`<button class="pzitem" data-k="${store.bank.length-1-i}"><span><span class="t">Bạn đã đi ${esc(b.label)}</span><br><span class="d">${d.toLocaleDateString('vi-VN')} · ${b.lw>0.3?'sai lầm lớn':'sai lầm'}</span></span></button>`;});
+    s+='</div>';
+  }else s+=`<p class="muted">Chưa có thế nào. Khi bạn đi sai trong ván đấu, thế cờ sẽ xuất hiện ở đây để luyện lại.</p>`;
+  el.innerHTML=s;
+  el.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const d=BUILTIN[+b.dataset.b];startPuzzle({...d,kind:'mate'});});
+  el.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const x=store.bank[+b.dataset.k];startPuzzle({name:'Sửa sai lầm của bạn',fen:x.fen,kind:'review',label:x.label});});
+  const r=$('pzRandom');if(r)r.onclick=nextReview;
+}
+function renderProgress(){
+  const el=$('t-progress'),gs=store.games;
+  if(!gs.length){el.innerHTML='<p class="muted">Hoàn thành ván đầu tiên để bắt đầu theo dõi tiến bộ: độ chính xác, kết quả và các lỗi hay gặp.</p>';return;}
+  const w=gs.filter(g=>g.res==='win').length,d=gs.filter(g=>g.res==='draw').length,l=gs.length-w-d;
+  const last=gs.slice(-10),avg=Math.round(last.reduce((a,g)=>a+g.acc,0)/last.length);
+  let s=`<div class="stats"><div class="stat"><b>${gs.length}</b><span>ván đã chơi</span></div><div class="stat"><b>${w}/${d}/${l}</b><span>thắng/hoà/thua</span></div><div class="stat"><b>${avg}%</b><span>chính xác (10 ván gần nhất)</span></div></div>`;
+  const pts=gs.slice(-20);
+  if(pts.length>=2){const W=300,H=70;const xs=i=>8+i*(W-16)/(pts.length-1),ys=v=>H-8-(v/100)*(H-16);
+    s+=`<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="Độ chính xác qua các ván"><line x1="0" x2="${W}" y1="${ys(50)}" y2="${ys(50)}" stroke="var(--line)"/><polyline fill="none" stroke="var(--jade)" stroke-width="2.5" points="${pts.map((g,i)=>xs(i)+','+ys(g.acc)).join(' ')}"/>${pts.map((g,i)=>`<circle cx="${xs(i)}" cy="${ys(g.acc)}" r="3" fill="${g.res==='win'?'var(--jade)':g.res==='loss'?'var(--danger)':'var(--amber)'}"/>`).join('')}</svg>`;}
+  const t=store.tags,tot=(t.hang||0)+(t.miss||0)+(t.mate||0)+(t.opening||0);
+  if(tot){
+    const items=[['hang','Để mất quân','Luyện “kiểm tra an toàn” trước mỗi nước.'],['miss','Bỏ lỡ cơ hội ăn quân','Rà Chiếu – Ăn – Doạ mỗi lượt.'],['mate','Liên quan đến chiếu bí','Làm các bài sát cục.'],['opening','Vi phạm nguyên tắc khai cuộc','Đọc lại phần khai cuộc.']].filter(x=>t[x[0]]).sort((a,b)=>t[b[0]]-t[a[0]]);
+    s+=`<h3>Lỗi hay gặp nhất</h3><table class="moves"><tbody>${items.map(x=>`<tr><td><b>${x[1]}</b><br><span class="muted">${x[2]}</span></td><td style="text-align:right">${t[x[0]]} lần</td></tr>`).join('')}</tbody></table>`;
+  }
+  const lv=store.games.slice(-5);
+  const recent=lv.filter(g=>g.res==='win').length;
+  if(lv.length>=3&&recent>=3)s+=`<p class="tip" style="margin-top:12px">Bạn thắng ${recent}/${lv.length} ván gần đây. Đã đến lúc nâng trình độ của máy.</p>`;
+  s+=`<h3>Các ván gần đây</h3><table class="moves"><tbody>${gs.slice(-8).reverse().map(g=>`<tr><td>${new Date(g.date).toLocaleDateString('vi-VN')}</td><td>${SIDE_NAME[g.side]}, ${LEVELS[g.level].name}</td><td>${g.res==='win'?'Thắng':g.res==='loss'?'Thua':'Hoà'}</td><td style="text-align:right">${g.acc}%</td></tr>`).join('')}</tbody></table>`;
+  s+=`<p style="margin-top:14px"><button class="btn small" id="bReset">Xoá dữ liệu tiến bộ</button></p>`;
+  el.innerHTML=s;
+  $('bReset').onclick=()=>{if(confirm('Xoá toàn bộ lịch sử ván đấu, bài tập đã lưu và thống kê lỗi?')){store.games=[];store.tags={};store.bank=[];store.solved={};saveStore();renderProgress();renderPuzzles();}};
+}
+function renderLessons(){
+  $('t-lessons').innerHTML=`
+<details open><summary>Quy trình suy nghĩ cho mỗi nước</summary>
+<p>Người chơi tiến bộ nhanh nhất không phải nhờ thuộc nhiều thế, mà nhờ một thói quen suy nghĩ đều đặn. Áp dụng 4 bước này cho mọi nước:</p>
+<ol><li><b>Đối phương vừa đi để làm gì?</b> Họ đe doạ ăn quân nào, chuẩn bị chiếu ở đâu?</li>
+<li><b>Quân nào của mình đang gặp nguy?</b> (Vòng đỏ trên bàn cờ giúp bạn lúc đầu — dần dần hãy tắt nó đi và tự nhìn.)</li>
+<li><b>Chiếu – Ăn – Doạ:</b> liệt kê các nước chiếu, các nước ăn quân, các nước đe doạ của mình trước, rồi mới nghĩ tới nước phát triển.</li>
+<li><b>Kiểm tra an toàn:</b> trước khi buông quân, tưởng tượng mình đã đi rồi và hỏi “giờ đối phương ăn được gì?”.</li></ol></details>
+<details><summary>Giá trị các quân</summary>
+<table><tbody><tr><td>Xe <span class="han">俥</span></td><td>9 điểm</td></tr><tr><td>Pháo <span class="han">炮</span></td><td>4,5 điểm — mạnh ở đầu và giữa ván khi còn nhiều ngòi</td></tr><tr><td>Mã <span class="han">傌</span></td><td>4 điểm — mạnh dần ở tàn cuộc</td></tr><tr><td>Sĩ, Tượng</td><td>2 điểm — quân phòng thủ</td></tr><tr><td>Tốt</td><td>1 điểm, qua sông khoảng 2 điểm</td></tr></tbody></table>
+<p>Đổi một Xe lấy Mã hoặc Pháo là thiệt khoảng 5 điểm, gần như thua thế. Đổi Mã lấy Pháo nói chung là ngang nhau.</p></details>
+<details><summary>Nguyên tắc khai cuộc</summary>
+<ul><li>Ra quân nhanh: Mã, Pháo, Xe nên tham gia trận đấu trong khoảng 6–8 nước đầu.</li>
+<li>Ra Xe sớm. Xe nằm im ở góc là lãng phí quân mạnh nhất.</li>
+<li>Không đi một quân nhiều lần nếu không có lý do (ăn quân, tránh bị ăn).</li>
+<li>Không đi Tướng sớm; giữ Sĩ, Tượng che chắn.</li>
+<li>Tranh giành trung lộ: Pháo đầu, Mã ở vị trí bình phong kiểm soát giữa bàn.</li>
+<li>Tiến Tốt 3 hoặc Tốt 7 để mở đường cho Mã.</li></ul></details>
+<details><summary>Các khai cuộc phổ biến</summary>
+<ul><li><b>Pháo đầu</b> (Pháo 2 bình 5): khai cuộc tấn công phổ biến nhất, đặt Pháo vào trung lộ uy hiếp Tốt đầu.</li>
+<li><b>Thuận pháo:</b> đỏ Pháo 2 bình 5, đen đáp Pháo 8 bình 5 — hai Pháo đầu cùng phía, trận đấu giao tranh sớm.</li>
+<li><b>Nghịch pháo (Liệt pháo):</b> đỏ Pháo 2 bình 5, đen đáp Pháo 2 bình 5 — Pháo đầu ngược phía, rất sắc bén.</li>
+<li><b>Bình phong mã:</b> đen ra hai Mã (Mã 2 tiến 3, Mã 8 tiến 7) để bảo vệ Tốt đầu — cách phòng thủ vững nhất trước Pháo đầu.</li>
+<li><b>Phi tượng</b> (Tượng 3 tiến 5): khai cuộc chắc chắn, thiên về phòng thủ phản công.</li>
+<li><b>Tiên nhân chỉ lộ</b> (Tốt 7 tiến 1): thăm dò ý đồ đối phương, linh hoạt.</li>
+<li><b>Khởi mã</b> (Mã 8 tiến 7 hoặc Mã 2 tiến 3): ra Mã trước, giữ nhiều lựa chọn.</li></ul>
+<p class="muted">Lời khuyên: hãy chọn một khai cuộc cho bên Đỏ và một cách đáp cho bên Đen, chơi đi chơi lại cho tới khi hiểu ý đồ, thay vì học thuộc nhiều.</p></details>
+<details><summary>Chiến thuật cơ bản</summary>
+<ul><li><b>Bắt đôi:</b> một nước đe doạ hai quân cùng lúc — đối phương chỉ cứu được một. Mã và Pháo rất giỏi việc này.</li>
+<li><b>Ghim (cản):</b> một quân không dám đi vì phía sau nó là quân giá trị hơn hoặc là Tướng.</li>
+<li><b>Chiếu rút:</b> di chuyển một quân làm lộ ra nước chiếu của quân khác, quân vừa đi tự do ăn quân.</li>
+<li><b>Thí quân:</b> chủ động bỏ quân để mở đường chiếu bí hoặc giành lợi thế lớn hơn.</li>
+<li><b>Mất ngòi / thêm ngòi:</b> với Pháo, việc thêm hoặc bớt một quân trên đường đi có thể biến nó từ vô hại thành nguy hiểm.</li>
+<li><b>Lộ mặt Tướng:</b> hai Tướng không được đối mặt trên cùng lộ trống — Tướng của bạn có thể khống chế cả một lộ như một quân Xe.</li></ul></details>
+<details><summary>Sát cục cần thuộc</summary>
+<ul><li><b>Song pháo:</b> hai Pháo cùng lộ, Pháo trước làm ngòi.</li>
+<li><b>Mã hậu pháo:</b> Mã đứng trước Tướng làm ngòi, Pháo phía sau chiếu.</li>
+<li><b>Ngọa tào mã:</b> Mã nhảy vào ô sát cung chiếu Tướng.</li>
+<li><b>Thiết môn xuyên:</b> Xe (hoặc Tốt) chiếu ở lộ giữa, Tướng hoặc Pháo phía sau yểm trợ.</li>
+<li><b>Song xe:</b> hai Xe thay nhau chiếu theo hàng hoặc lộ.</li>
+<li><b>Bạch diện tướng:</b> tận dụng luật lộ mặt Tướng để khoá đường thoát.</li></ul>
+<p>Luyện các thế này trong tab Bài tập.</p></details>
+<details><summary>Tàn cuộc</summary>
+<ul><li>Ở tàn cuộc, Tướng trở thành quân tham chiến: dùng Tướng khống chế lộ.</li>
+<li>Pháo cần ngòi — khi ít quân, Pháo yếu đi; Mã linh hoạt hơn.</li>
+<li>Tốt qua sông và tiến gần cung Tướng rất có giá trị; nhưng Tốt đã xuống đáy thì gần như vô dụng.</li>
+<li>Khi đang hơn quân, hãy đổi quân để đơn giản hoá thế cờ; khi đang kém, tránh đổi quân.</li></ul></details>
+<details><summary>Lộ trình luyện tập mỗi ngày</summary>
+<ol><li>5–10 phút: giải lại các thế sai lầm của bạn trong tab Bài tập.</li>
+<li>1–2 ván với máy ở mức vừa sức (thắng khoảng một nửa). Bật “Dừng lại khi đi sai” để sửa ngay tại chỗ.</li>
+<li>Sau mỗi ván: xem lại các nước chấm cam, đỏ và tự hỏi vì sao mình không nhìn thấy nước đúng.</li>
+<li>Khi thắng 3/5 ván gần nhất, tăng trình độ của máy. Khi đã quen, tắt cảnh báo quân bị đe doạ để tự rèn mắt.</li></ol></details>`;
+}
+
+// ---------- UI wiring ----------
+function selectTab(id){document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('on',p.id==='t-'+id));}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>selectTab(b.dataset.tab));
+const dlg=$('dlgNew');
+$('optLevel').innerHTML=LEVELS.map((l,i)=>`<label><input type="radio" name="lvl" value="${i}" ${i===1?'checked':''}><span>${l.name}<small>${l.desc}</small></span></label>`).join('');
+function openNew(){if(busy)return;if(G){const r=document.querySelector(`input[name=lvl][value="${G.level}"]`);if(r)r.checked=true;const sd=document.querySelector(`input[name=side][value="${G.userSide}"]`);if(sd)sd.checked=true;}if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');}
+window.openNew=openNew;window.nextReview=nextReview;
+$('bNew').onclick=openNew;
+$('dlgCancel').onclick=()=>dlg.close();
+$('dlgStart').onclick=()=>{const side=+document.querySelector('input[name=side]:checked').value,lvl=+document.querySelector('input[name=lvl]:checked').value;dlg.close();staticFlip=null;newGame(side,lvl);};
+$('bHint').onclick=hint;
+$('bUndo').onclick=undo;
+function applyTheme(){if(settings.theme)document.documentElement.setAttribute('data-theme',settings.theme);else document.documentElement.removeAttribute('data-theme');}
+$('bTheme').onclick=()=>{const dark=settings.theme?settings.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;settings.theme=dark?'light':'dark';applyTheme();if(G)saveGame();};
+const binds=[['oThreat','threats'],['oOpp','opps'],['oPause','pause'],['oVn','vn']];
+for(const [id,k] of binds){const el=$(id);el.checked=!!settings[k];el.onchange=()=>{settings[k]=el.checked;store.settings=settings;saveStore();render();};}
+
+applyTheme();renderLessons();if(matchMedia('(max-width:920px)').matches)$('tgl').open=false;
+if(!restoreGame()){G=null;newGame(1,1);}else{
+  drawStatic();render();turnStatus();
+  if(!G.over&&G.pos.side!==G.userSide)aiTurn();
+  else if(!G.over){setTimeout(()=>{const an=getPre(G.pos);setEval(an.s*G.pos.side);},50);}
+}
+renderPuzzles();renderProgress();
+</script>
+</body>
+</html>
