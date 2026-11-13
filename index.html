@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&text=%E2%99%9A%E2%99%9B%E2%99%9C%E2%99%9D%E2%99%9E%E2%99%9F&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#E4EAE4; --panel:#F6F8F4; --panel2:#ECF1EC; --ink:#1C2723; --muted:#56665F; --line:#C8D2CB;
@@ -190,10 +191,54 @@ dialog{max-height:calc(100svh - 32px);overflow:auto}
 .hintp{fill:none;stroke:var(--focus);stroke-width:4}
 .arrow{stroke:var(--focus);stroke-width:7;stroke-linecap:round;opacity:.82}
 @media (prefers-reduced-motion: reduce){.thr{stroke-dasharray:none}.spinner{animation:none}.evalbar i{transition:none}}
+
+/* ===== game switch + chess ===== */
+.app[hidden]{display:none}
+.gamesw{max-width:1180px;margin:0 auto;padding:12px 16px 0;display:flex;gap:6px}
+@media (max-width:920px){.gamesw{padding:10px 10px 0}}
+.gamesw button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 18px;border-radius:20px;font-weight:700;cursor:pointer;font-size:14px}
+.gamesw button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seal.ch{background:var(--jade);font-family:"Noto Sans Symbols 2","Segoe UI Symbol","Apple Symbols",serif;font-weight:400;letter-spacing:0;padding:0 7px 2px}
+.cboardbox{position:relative;margin:0 auto;max-width:max(300px,calc(100svh - 200px));border-radius:6px;overflow:hidden;box-shadow:0 10px 28px -14px rgba(0,30,10,.55)}
+svg#c-board{display:block;width:100%;height:auto;touch-action:manipulation;user-select:none;-webkit-user-select:none;cursor:pointer}
+.sql{fill:#E7ECDF}.sqd{fill:#7D9F88}
+.co{font-size:11px;font-weight:700;font-family:var(--sans)}.co.ol{fill:#E7ECDF}.co.od{fill:#5E7F69}
+.cp text{font-family:"Noto Sans Symbols 2","Segoe UI Symbol","Apple Symbols","DejaVu Sans",serif;font-size:46px;text-anchor:middle;dominant-baseline:central}
+.cp.w text{fill:#FBFAF5;stroke:#262421;stroke-width:1.4px;paint-order:stroke}
+.cp.b text{fill:#24221F;stroke:#24221F;stroke-width:.6px}
+.clast{fill:rgba(240,196,50,.42)}
+.cchk{fill:rgba(220,40,30,.45)}
+.csel{fill:none;stroke:var(--focus);stroke-width:3}
+.ctg{fill:rgba(20,80,50,.45)}.ctgc{fill:none;stroke:rgba(20,80,50,.55);stroke-width:5}
+.cthr{fill:none;stroke:#C0261B;stroke-width:3;stroke-dasharray:6 4}
+.copp{fill:none;stroke:#1C6B4A;stroke-width:3;stroke-dasharray:3 4}
+.chint{fill:none;stroke:var(--focus);stroke-width:4}
+.carrow{stroke:var(--focus);stroke-width:8;stroke-linecap:round;opacity:.8}
+.star{font-size:34px;text-anchor:middle;dominant-baseline:central;fill:#F2B705;stroke:#7A5300;stroke-width:1px;font-family:var(--sans)}
+.cbar{background:#2a2a2a}.cbar i{background:#F4F2EA}
+.promo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)}
+.promo[hidden]{display:none}
+.pbox{background:var(--panel);border-radius:10px;padding:12px 14px;text-align:center}
+.pbox p{margin:0 0 8px;font-weight:700}
+.prow{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.prow .btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px}
+.pg{font-family:"Noto Sans Symbols 2","Segoe UI Symbol","Apple Symbols",serif;font-size:30px;line-height:1}
+.pg.w{color:#fff;-webkit-text-stroke:1px #262421}.pg.b{color:#24221F}
+.lesson-b b{display:inline}
+.lesson-b .lhead{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.lesson-b .lhead b{font-size:15.5px}
+.ltext p{margin:6px 0;max-width:70ch}
+.ltext .task{font-weight:600}
+.lfb{margin:6px 0;padding:6px 10px;border-radius:6px;background:var(--panel2);border-left:4px solid var(--line)}
+.lfb.ok{border-left-color:var(--jade)}.lfb.bad{border-left-color:var(--danger)}
+.llist{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px;margin:8px 0 14px;counter-reset:l}
+.llist li{counter-increment:l}
+.llist .t::before{content:counter(l) ". "}
 </style>
 </head>
 <body>
-<div class="app">
+<nav class="gamesw" aria-label="Chọn môn cờ"><button data-g="xq" aria-pressed="true">Cờ tướng</button><button data-g="ch" aria-pressed="false">Cờ vua</button></nav>
+<div class="app" id="xqApp">
   <main>
     <div class="brand"><span class="seal">象棋</span><h1>Luyện Cờ Tướng</h1><small id="sub"></small></div>
     <div class="pzbanner" id="pzb"></div>
@@ -234,6 +279,44 @@ dialog{max-height:calc(100svh - 32px);overflow:auto}
   </aside>
 </div>
 
+<div class="app" id="chApp" hidden>
+  <main>
+    <div class="brand"><span class="seal ch">♞</span><h1>Luyện Cờ Vua</h1><small id="c-sub"></small></div>
+    <div class="pzbanner" id="c-lesson"></div>
+    <div class="status"><div id="c-status" aria-live="polite"></div></div>
+    <div class="evalwrap" id="c-evalwrap"><span>Thế cờ</span><div class="evalbar cbar" title="Lợi thế: trắng bên trái, đen bên phải"><i id="c-evalfill" style="width:50%"></i></div><span id="c-evaltxt">Cân bằng</span></div>
+    <div class="cboardbox"><svg id="c-board" viewBox="0 0 480 480" role="img" aria-label="Bàn cờ vua"></svg><div class="promo" id="c-promo" hidden></div></div>
+    <div class="controls">
+      <button class="btn primary" id="c-new">Ván mới</button>
+      <button class="btn" id="c-hint">Gợi ý</button>
+      <button class="btn" id="c-undo">Đi lại</button>
+      <button class="btn" id="c-theme" title="Đổi giao diện sáng/tối">Sáng / tối</button>
+    </div>
+    <div id="c-latest" class="latest" aria-live="polite"></div>
+  </main>
+  <aside class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="learn" aria-selected="true">Học từ đầu</button>
+      <button role="tab" data-tab="coach" aria-selected="false">Huấn luyện</button>
+      <button role="tab" data-tab="moves" aria-selected="false">Nước đi</button>
+      <button role="tab" data-tab="progress" aria-selected="false">Tiến bộ</button>
+    </div>
+    <section class="tabpane on" id="ct-learn"></section>
+    <section class="tabpane" id="ct-coach">
+      <details class="tgl" id="c-tgl" open><summary>Tuỳ chọn hiển thị</summary>
+      <div class="toggles">
+        <label><input type="checkbox" id="c-oThreat"> Cảnh báo quân bị đe doạ</label>
+        <label><input type="checkbox" id="c-oOpp"> Chỉ ra cơ hội ăn quân</label>
+        <label><input type="checkbox" id="c-oPause"> Dừng lại khi đi sai</label>
+      </div>
+      </details>
+      <div class="feed" id="c-feed"></div>
+    </section>
+    <section class="tabpane" id="ct-moves"><table class="moves"><thead><tr><th>#</th><th>Trắng</th><th>Đen</th></tr></thead><tbody id="c-mvbody"></tbody></table><p class="muted" style="font-size:13px;margin-top:10px">V = Vua, H = Hậu, X = Xe, T = Tượng, M = Mã. Chấm màu cho biết chất lượng nước đi của bạn.</p></section>
+    <section class="tabpane" id="ct-progress"></section>
+  </aside>
+</div>
+
 <dialog id="dlgNew">
   <h2>Ván mới</h2>
   <div><b>Bạn cầm quân</b></div>
@@ -244,6 +327,18 @@ dialog{max-height:calc(100svh - 32px);overflow:auto}
   <div><b>Trình độ của máy</b></div>
   <div class="opts" id="optLevel"></div>
   <div class="dlgrow"><button class="btn" id="dlgCancel">Huỷ</button><button class="btn primary" id="dlgStart">Bắt đầu</button></div>
+</dialog>
+
+<dialog id="c-dlg">
+  <h2>Ván cờ vua mới</h2>
+  <div><b>Bạn cầm quân</b></div>
+  <div class="opts">
+    <label><input type="radio" name="cside" value="1" checked><span>Trắng<small>Đi trước — nên chọn khi mới học</small></span></label>
+    <label><input type="radio" name="cside" value="-1"><span>Đen<small>Máy đi trước</small></span></label>
+  </div>
+  <div><b>Trình độ của máy</b></div>
+  <div class="opts" id="c-optLevel"></div>
+  <div class="dlgrow"><button class="btn" id="c-dlgCancel">Huỷ</button><button class="btn primary" id="c-dlgStart">Bắt đầu</button></div>
 </dialog>
 
 <script>
@@ -1156,8 +1251,8 @@ function renderLessons(){
 }
 
 // ---------- UI wiring ----------
-function selectTab(id){document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('on',p.id==='t-'+id));}
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>selectTab(b.dataset.tab));
+function selectTab(id){document.querySelectorAll('#xqApp .tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id?'true':'false'));document.querySelectorAll('#xqApp .tabpane').forEach(p=>p.classList.toggle('on',p.id==='t-'+id));}
+document.querySelectorAll('#xqApp .tabs button').forEach(b=>b.onclick=()=>selectTab(b.dataset.tab));
 const dlg=$('dlgNew');
 $('optLevel').innerHTML=LEVELS.map((l,i)=>`<label><input type="radio" name="lvl" value="${i}" ${i===1?'checked':''}><span>${l.name}<small>${l.desc}</small></span></label>`).join('');
 function openNew(){if(busy)return;if(G){const r=document.querySelector(`input[name=lvl][value="${G.level}"]`);if(r)r.checked=true;const sd=document.querySelector(`input[name=side][value="${G.userSide}"]`);if(sd)sd.checked=true;}if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');}
@@ -1179,6 +1274,890 @@ if(!restoreGame()){G=null;newGame(1,1);}else{
   else if(!G.over){setTimeout(()=>{const an=getPre(G.pos);setEval(an.s*G.pos.side);},50);}
 }
 renderPuzzles();renderProgress();
+</script>
+<script>
+// ===== Chess engine (namespace CE) =====
+const CE = (() => {
+  const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  const MATE = 32000;
+  const V = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
+  const T = {
+    p: [0,0,0,0,0,0,0,0,50,50,50,50,50,50,50,50,10,10,20,30,30,20,10,10,5,5,10,25,25,10,5,5,0,0,0,20,20,0,0,0,5,-5,-10,0,0,-10,-5,5,5,10,10,-20,-20,10,10,5,0,0,0,0,0,0,0,0],
+    n: [-50,-40,-30,-30,-30,-30,-40,-50,-40,-20,0,0,0,0,-20,-40,-30,0,10,15,15,10,0,-30,-30,5,15,20,20,15,5,-30,-30,0,15,20,20,15,0,-30,-30,5,10,15,15,10,5,-30,-40,-20,0,5,5,0,-20,-40,-50,-40,-30,-30,-30,-30,-40,-50],
+    b: [-20,-10,-10,-10,-10,-10,-10,-20,-10,0,0,0,0,0,0,-10,-10,0,5,10,10,5,0,-10,-10,5,5,10,10,5,5,-10,-10,0,10,10,10,10,0,-10,-10,10,10,10,10,10,10,-10,-10,5,0,0,0,0,5,-10,-20,-10,-10,-10,-10,-10,-10,-20],
+    r: [0,0,0,0,0,0,0,0,5,10,10,10,10,10,10,5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,0,0,0,5,5,0,0,0],
+    q: [-20,-10,-10,-5,-5,-10,-10,-20,-10,0,0,0,0,0,0,-10,-10,0,5,5,5,5,0,-10,-5,0,5,5,5,5,0,-5,0,0,5,5,5,5,0,-5,-10,5,5,5,5,5,0,-10,-10,0,5,0,0,0,0,-10,-20,-10,-10,-5,-5,-10,-10,-20],
+    k: [-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-20,-30,-30,-40,-40,-30,-30,-20,-10,-20,-20,-20,-20,-20,-20,-10,20,20,0,0,0,0,20,20,20,30,10,0,0,10,30,20],
+    e: [-50,-40,-30,-20,-20,-30,-40,-50,-30,-20,-10,0,0,-10,-20,-30,-30,-10,20,30,30,20,-10,-30,-30,-10,30,40,40,30,-10,-30,-30,-10,30,40,40,30,-10,-30,-30,-10,20,30,30,20,-10,-30,-30,-30,0,0,0,0,-30,-30,-50,-30,-30,-30,-30,-30,-30,-50],
+  };
+  const NO = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+  const KO = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+  const RD = [[-1,0],[1,0],[0,-1],[0,1]], BD = [[-1,-1],[-1,1],[1,-1],[1,1]];
+  const CR = new Array(64).fill(15); CR[60] = 12; CR[63] = 14; CR[56] = 13; CR[4] = 3; CR[7] = 11; CR[0] = 7;
+  const side = p => p === '.' ? 0 : (p < 'a' ? 1 : -1);
+  const sqName = i => 'abcdefgh'[i & 7] + (8 - (i >> 3));
+  const sqIdx = s => (8 - +s[1]) * 8 + 'abcdefgh'.indexOf(s[0]);
+  const inb = (r, c) => r >= 0 && r < 8 && c >= 0 && c < 8;
+  const mk = (f, t, pr) => f | (t << 6) | ((pr || 0) << 12);
+  const mf = m => m & 63, mt = m => (m >> 6) & 63, mp = m => m >> 12;
+
+  let seed = 0x2545f491;
+  const r32 = () => { seed ^= seed << 13; seed >>>= 0; seed ^= seed >>> 17; seed ^= seed << 5; seed >>>= 0; return seed; };
+  const Z1 = {}, Z2 = {};
+  for (const p of 'PNBRQKpnbrqk') { Z1[p] = []; Z2[p] = []; for (let i = 0; i < 64; i++) { Z1[p].push(r32()); Z2[p].push(r32()); } }
+  const ZC1 = [], ZC2 = [], ZE1 = [], ZE2 = []; for (let i = 0; i < 16; i++) { ZC1.push(r32()); ZC2.push(r32()); } for (let i = 0; i < 8; i++) { ZE1.push(r32()); ZE2.push(r32()); }
+  const ZS1 = r32(), ZS2 = r32();
+
+  class Pos {
+    constructor(fen) { this.load(fen || START); }
+    load(fen) {
+      const [bd, s, cs, ep, h, f] = fen.trim().split(/\s+/);
+      this.b = [];
+      for (const row of bd.split('/')) for (const ch of row) { if (ch >= '1' && ch <= '8') for (let i = 0; i < +ch; i++) this.b.push('.'); else this.b.push(ch); }
+      this.side = s === 'b' ? -1 : 1;
+      this.castle = 0; if (cs && cs !== '-') { if (cs.includes('K')) this.castle |= 1; if (cs.includes('Q')) this.castle |= 2; if (cs.includes('k')) this.castle |= 4; if (cs.includes('q')) this.castle |= 8; }
+      this.ep = ep && ep !== '-' ? sqIdx(ep) : -1;
+      this.half = +h || 0; this.full = +f || 1;
+      this.stack = []; this.hist = [];
+      this.kw = this.b.indexOf('K'); this.kb = this.b.indexOf('k');
+      this.rehash();
+    }
+    rehash() {
+      let a = 0, c = 0;
+      for (let i = 0; i < 64; i++) { const p = this.b[i]; if (p !== '.') { a ^= Z1[p][i]; c ^= Z2[p][i]; } }
+      a ^= ZC1[this.castle]; c ^= ZC2[this.castle];
+      if (this.ep >= 0) { a ^= ZE1[this.ep & 7]; c ^= ZE2[this.ep & 7]; }
+      if (this.side === -1) { a ^= ZS1; c ^= ZS2; }
+      this.h1 = a >>> 0; this.h2 = c >>> 0;
+    }
+    fen() {
+      let o = '';
+      for (let r = 0; r < 8; r++) { let e = 0; for (let c = 0; c < 8; c++) { const p = this.b[r * 8 + c]; if (p === '.') e++; else { if (e) { o += e; e = 0; } o += p; } } if (e) o += e; if (r < 7) o += '/'; }
+      let cs = (this.castle & 1 ? 'K' : '') + (this.castle & 2 ? 'Q' : '') + (this.castle & 4 ? 'k' : '') + (this.castle & 8 ? 'q' : '');
+      return `${o} ${this.side === 1 ? 'w' : 'b'} ${cs || '-'} ${this.ep >= 0 ? sqName(this.ep) : '-'} ${this.half} ${this.full}`;
+    }
+    clone() { const p = new Pos(this.fen()); p.hist = this.hist.slice(); return p; }
+    make(m) {
+      const f = mf(m), t = mt(m), pr = mp(m), p = this.b[f], s = side(p), lp = p.toLowerCase();
+      let cap = this.b[t];
+      const u = { m, cap, castle: this.castle, ep: this.ep, half: this.half, full: this.full, h1: this.h1, h2: this.h2, epCap: -1, rf: -1, rt: -1 };
+      this.hist.push(this.h1);
+      if (lp === 'p' && t === this.ep && cap === '.') { const cs = t + (s === 1 ? 8 : -8); u.epCap = cs; u.cap = cap = this.b[cs]; this.b[cs] = '.'; }
+      this.b[t] = pr ? (s === 1 ? 'NBRQ' : 'nbrq')[pr - 1] : p; this.b[f] = '.';
+      if (lp === 'k') {
+        if (s === 1) this.kw = t; else this.kb = t;
+        if (Math.abs(t - f) === 2) { const rf = t > f ? f + 3 : f - 4, rt = t > f ? f + 1 : f - 1; this.b[rt] = this.b[rf]; this.b[rf] = '.'; u.rf = rf; u.rt = rt; }
+      }
+      this.castle &= CR[f] & CR[t];
+      this.ep = (lp === 'p' && Math.abs(t - f) === 16) ? (f + t) >> 1 : -1;
+      this.half = (lp === 'p' || cap !== '.') ? 0 : this.half + 1;
+      if (s === -1) this.full++;
+      this.side = -this.side;
+      this.stack.push(u);
+      this.rehash();
+    }
+    unmake() {
+      const u = this.stack.pop(); this.hist.pop();
+      const f = mf(u.m), t = mt(u.m), pr = mp(u.m), moved = this.b[t];
+      const p = pr ? (side(moved) === 1 ? 'P' : 'p') : moved;
+      this.b[f] = p;
+      if (u.epCap >= 0) { this.b[t] = '.'; this.b[u.epCap] = u.cap; } else this.b[t] = u.cap;
+      if (u.rf >= 0) { this.b[u.rf] = this.b[u.rt]; this.b[u.rt] = '.'; }
+      if (p === 'K') this.kw = f; else if (p === 'k') this.kb = f;
+      this.castle = u.castle; this.ep = u.ep; this.half = u.half; this.full = u.full; this.h1 = u.h1; this.h2 = u.h2; this.side = -this.side;
+    }
+    attacked(sq, by) {
+      const b = this.b, r = sq >> 3, c = sq & 7;
+      const pr = by === 1 ? r + 1 : r - 1, P = by === 1 ? 'P' : 'p';
+      if (pr >= 0 && pr < 8) { if (c > 0 && b[pr * 8 + c - 1] === P) return true; if (c < 7 && b[pr * 8 + c + 1] === P) return true; }
+      const N = by === 1 ? 'N' : 'n', K = by === 1 ? 'K' : 'k';
+      for (const [dr, dc] of NO) { const rr = r + dr, cc = c + dc; if (inb(rr, cc) && b[rr * 8 + cc] === N) return true; }
+      for (const [dr, dc] of KO) { const rr = r + dr, cc = c + dc; if (inb(rr, cc) && b[rr * 8 + cc] === K) return true; }
+      const R = by === 1 ? 'R' : 'r', B = by === 1 ? 'B' : 'b', Q = by === 1 ? 'Q' : 'q';
+      for (const [dr, dc] of RD) { let rr = r + dr, cc = c + dc; while (inb(rr, cc)) { const q = b[rr * 8 + cc]; if (q !== '.') { if (q === R || q === Q) return true; break; } rr += dr; cc += dc; } }
+      for (const [dr, dc] of BD) { let rr = r + dr, cc = c + dc; while (inb(rr, cc)) { const q = b[rr * 8 + cc]; if (q !== '.') { if (q === B || q === Q) return true; break; } rr += dr; cc += dc; } }
+      return false;
+    }
+    inCheck(s) { const k = s === 1 ? this.kw : this.kb; return k >= 0 && this.attacked(k, -s); }
+    gen(capOnly, s) {
+      if (s === undefined) s = this.side;
+      const b = this.b, out = [];
+      for (let f = 0; f < 64; f++) {
+        const p = b[f]; if (side(p) !== s) continue;
+        const r = f >> 3, c = f & 7, lp = p.toLowerCase();
+        if (lp === 'p') {
+          const dir = s === 1 ? -1 : 1, start = s === 1 ? 6 : 1, last = s === 1 ? 0 : 7, r1 = r + dir;
+          if (r1 < 0 || r1 > 7) continue;
+          const pushP = (t) => { if ((t >> 3) === last) { for (const pr of [4, 3, 2, 1]) out.push(mk(f, t, pr)); } else out.push(mk(f, t)); };
+          if (b[r1 * 8 + c] === '.' && (!capOnly || r1 === last)) {
+            pushP(r1 * 8 + c);
+            if (!capOnly && r === start && b[(r + 2 * dir) * 8 + c] === '.') out.push(mk(f, (r + 2 * dir) * 8 + c));
+          }
+          for (const dc of [-1, 1]) { const cc = c + dc; if (cc < 0 || cc > 7) continue; const t = r1 * 8 + cc; if (side(b[t]) === -s || t === this.ep) pushP(t); }
+        } else if (lp === 'n' || lp === 'k') {
+          for (const [dr, dc] of (lp === 'n' ? NO : KO)) { const rr = r + dr, cc = c + dc; if (!inb(rr, cc)) continue; const t = rr * 8 + cc, q = side(b[t]); if (q === s) continue; if (capOnly && q === 0) continue; out.push(mk(f, t)); }
+          if (lp === 'k' && !capOnly) {
+            if (s === 1 && f === 60) {
+              if ((this.castle & 1) && b[63] === 'R' && b[61] === '.' && b[62] === '.' && !this.attacked(60, -1) && !this.attacked(61, -1) && !this.attacked(62, -1)) out.push(mk(60, 62));
+              if ((this.castle & 2) && b[56] === 'R' && b[59] === '.' && b[58] === '.' && b[57] === '.' && !this.attacked(60, -1) && !this.attacked(59, -1) && !this.attacked(58, -1)) out.push(mk(60, 58));
+            } else if (s === -1 && f === 4) {
+              if ((this.castle & 4) && b[7] === 'r' && b[5] === '.' && b[6] === '.' && !this.attacked(4, 1) && !this.attacked(5, 1) && !this.attacked(6, 1)) out.push(mk(4, 6));
+              if ((this.castle & 8) && b[0] === 'r' && b[3] === '.' && b[2] === '.' && b[1] === '.' && !this.attacked(4, 1) && !this.attacked(3, 1) && !this.attacked(2, 1)) out.push(mk(4, 2));
+            }
+          }
+        } else {
+          const dirs = lp === 'r' ? RD : lp === 'b' ? BD : RD.concat(BD);
+          for (const [dr, dc] of dirs) { let rr = r + dr, cc = c + dc; while (inb(rr, cc)) { const t = rr * 8 + cc, q = side(b[t]); if (q === s) break; if (q === 0) { if (!capOnly) out.push(mk(f, t)); } else { out.push(mk(f, t)); break; } rr += dr; cc += dc; } }
+        }
+      }
+      return out;
+    }
+    legal(s) {
+      if (s === undefined) s = this.side;
+      const saveSide = this.side; this.side = s;
+      const res = this.gen(false, s).filter(m => { this.make(m); const ok = !this.inCheck(s); this.unmake(); return ok; });
+      this.side = saveSide; return res;
+    }
+    isRepeat() { const h = this.hist, n = h.length; for (let i = n - 2, k = 0; i >= 0 && k < this.half; i -= 2, k += 2) if (h[i] === this.h1) return true; return false; }
+    insufficient() {
+      const ps = this.b.filter(p => p !== '.' && p.toLowerCase() !== 'k');
+      if (!ps.length) return true;
+      if (ps.length === 1 && 'nbNB'.includes(ps[0])) return true;
+      return false;
+    }
+  }
+
+  function evaluate(pos) {
+    const b = pos.b; let s = 0, nonPawn = 0, bw = 0, bb = 0;
+    for (let i = 0; i < 64; i++) { const p = b[i]; if (p === '.') continue; const l = p.toLowerCase(); if (l !== 'p' && l !== 'k') nonPawn += V[l]; }
+    const end = nonPawn <= 2600;
+    for (let i = 0; i < 64; i++) {
+      const p = b[i]; if (p === '.') continue; const l = p.toLowerCase();
+      const tbl = l === 'k' ? (end ? T.e : T.k) : T[l];
+      if (p < 'a') { s += V[l] + tbl[i]; if (l === 'b') bw++; } else { s -= V[l] + tbl[i ^ 56]; if (l === 'b') bb++; }
+    }
+    if (bw >= 2) s += 30; if (bb >= 2) s -= 30;
+    return s * pos.side + 10;
+  }
+
+  const ABORT = { abort: 1 };
+  let TT = new Map();
+  const aval = p => { const l = p.toLowerCase(); return l === 'k' ? 50 : V[l]; };
+  function order(pos, moves, ttm, S, ply) {
+    const k = S.killers[ply] || [];
+    const sc = moves.map(m => {
+      if (m === ttm) return 1e8;
+      const t = mt(m), cap = pos.b[t];
+      if (cap !== '.') return 1e7 + V[cap.toLowerCase()] * 10 - aval(pos.b[mf(m)]) / 10;
+      if (mp(m) === 4) return 9.5e6;
+      if (m === k[0]) return 9e6; if (m === k[1]) return 8e6;
+      return S.hist[m] || 0;
+    });
+    return moves.map((_, i) => i).sort((a, b) => sc[b] - sc[a]).map(i => moves[i]);
+  }
+  function qs(pos, a, b, ply, S, qd) {
+    if ((++S.nodes & 1023) === 0 && S.canAbort && Date.now() > S.deadline) throw ABORT;
+    const st = evaluate(pos); if (st >= b) return st; if (st > a) a = st; if (qd >= 8) return st;
+    const me = pos.side;
+    for (const m of order(pos, pos.gen(true), 0, S, 63)) {
+      pos.make(m); if (pos.inCheck(me)) { pos.unmake(); continue; }
+      const sc = -qs(pos, -b, -a, ply + 1, S, qd + 1); pos.unmake();
+      if (sc >= b) return sc; if (sc > a) a = sc;
+    }
+    return a;
+  }
+  function nm(pos, d, a, b, ply, S) {
+    if ((++S.nodes & 1023) === 0 && S.canAbort && Date.now() > S.deadline) throw ABORT;
+    if (ply > 0 && (pos.half >= 100 || pos.isRepeat())) return 0;
+    const me = pos.side, chk = pos.inCheck(me);
+    if (chk && ply < 30) d++;
+    if (d <= 0) return qs(pos, a, b, ply, S, 0);
+    const e = TT.get(pos.h1); let ttm = 0;
+    if (e && e.h2 === pos.h2) {
+      ttm = e.m;
+      if (e.d >= d && ply > 0) { let s = e.s; if (s > MATE - 500) s -= ply; else if (s < -MATE + 500) s += ply; if (e.f === 0) return s; if (e.f === 1 && s >= b) return s; if (e.f === 2 && s <= a) return s; }
+    }
+    let best = -MATE - 1, bm = 0, n = 0; const a0 = a;
+    for (const m of order(pos, pos.gen(false), ttm, S, ply)) {
+      pos.make(m); if (pos.inCheck(me)) { pos.unmake(); continue; }
+      n++;
+      const sc = -nm(pos, d - 1, -b, -a, ply + 1, S); pos.unmake();
+      if (sc > best) { best = sc; bm = m; if (sc > a) { a = sc; if (sc >= b) { if (pos.b[mt(m)] === '.') { const k = S.killers[ply] || (S.killers[ply] = [0, 0]); if (k[0] !== m) { k[1] = k[0]; k[0] = m; } S.hist[m] = (S.hist[m] || 0) + d * d; } break; } } }
+    }
+    if (!n) return chk ? -MATE + ply : 0;
+    let st = best; if (st > MATE - 500) st += ply; else if (st < -MATE + 500) st -= ply;
+    if (TT.size > 400000) TT = new Map();
+    TT.set(pos.h1, { h2: pos.h2, d, s: st, f: best <= a0 ? 2 : best >= b ? 1 : 0, m: bm });
+    return best;
+  }
+  function root(pos, d, S, prev, moves) {
+    let a = -MATE - 1, best = -MATE - 1, bm = 0;
+    const ms = prev ? [prev, ...moves.filter(m => m !== prev)] : order(pos, moves, 0, S, 0);
+    for (const m of ms) { pos.make(m); const sc = -nm(pos, d - 1, -MATE - 1, -a, 1, S); pos.unmake(); if (sc > best) { best = sc; bm = m; } if (sc > a) a = sc; }
+    return { m: bm, s: best };
+  }
+  function pvOf(pos, first, n) {
+    const pv = [first]; let made = 1; pos.make(first);
+    while (pv.length < n) { const e = TT.get(pos.h1); if (!e || e.h2 !== pos.h2 || !e.m || !pos.legal().includes(e.m)) break; pv.push(e.m); pos.make(e.m); made++; if (pos.isRepeat()) break; }
+    while (made--) pos.unmake(); return pv;
+  }
+  function think(pos, opt) {
+    opt = opt || {};
+    const moves = pos.legal(); if (!moves.length) return null;
+    const S = { nodes: 0, deadline: Date.now() + (opt.time || 1000), killers: [], hist: {}, canAbort: false };
+    let best = null; const base = pos.stack.length;
+    for (let d = 1; d <= (opt.depth || 4); d++) {
+      S.canAbort = d > 1;
+      try { const r = root(pos, d, S, best ? best.m : 0, moves); best = { m: r.m, s: r.s, d }; if (Math.abs(r.s) > MATE - 200) break; }
+      catch (e) { while (pos.stack.length > base) pos.unmake(); if (e !== ABORT) throw e; break; }
+      if (Date.now() > S.deadline) break;
+    }
+    if (opt.noise && moves.length > 1) {
+      const S2 = { nodes: 0, deadline: 1e15, killers: [], hist: {}, canAbort: false };
+      const sc = moves.map(m => { pos.make(m); const s = -nm(pos, Math.max(0, (opt.noiseDepth || 1) - 1), -MATE - 1, MATE + 1, 1, S2); pos.unmake(); return { m, s }; }).sort((a, b) => b.s - a.s);
+      const pool = sc.filter(x => x.s >= sc[0].s - opt.noise);
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      best = { m: pick.m, s: pick.s, d: opt.noiseDepth || 1 };
+    }
+    best.pv = pvOf(pos, best.m, 6);
+    return best;
+  }
+  return { Pos, think, evaluate, START, MATE, V, sqName, sqIdx, side, mf, mt, mp, mk };
+})();
+
+
+</script>
+<script>
+// ================= Chess app =================
+(() => {
+const { Pos, think, START, MATE, V, sqName, sqIdx, side, mf, mt, mp } = CE;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const tick = (ms = 30) => new Promise(r => setTimeout(r, ms));
+const NM = { p: 'Tốt', n: 'Mã', b: 'Tượng', r: 'Xe', q: 'Hậu', k: 'Vua' };
+const LET = { n: 'M', b: 'T', r: 'X', q: 'H', k: 'V' };
+const PR = ['', 'n', 'b', 'r', 'q'];
+const GLY = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
+const CLS = { best: 'Xuất sắc', good: 'Tốt', inacc: 'Thiếu chính xác', mistake: 'Sai lầm', blunder: 'Sai lầm lớn' };
+const SN = { 1: 'Trắng', '-1': 'Đen' };
+const LEVELS = [
+  { name: 'Mới tập', desc: 'Máy đi gần như ngẫu nhiên, hay bỏ quân — để bạn làm quen luật', depth: 1, time: 200, noise: 450, noiseDepth: 1 },
+  { name: 'Nhập môn', desc: 'Biết ăn quân bị bỏ trống, nhưng vẫn hay sai', depth: 2, time: 300, noise: 130, noiseDepth: 1 },
+  { name: 'Cơ bản', desc: 'Ít bỏ quân, tính trước 2–3 nước', depth: 3, time: 500, noise: 35, noiseDepth: 2 },
+  { name: 'Trung cấp', desc: 'Tính sâu hơn, phạt nặng sai lầm', depth: 5, time: 1000 },
+  { name: 'Cao cấp', desc: 'Rất mạnh, khó thắng', depth: 12, time: 2500 },
+];
+const ANA = { depth: 10, time: 750 };
+const EMPTY = '8/8/8/8/8/8/8/8 w - - 0 1';
+function F(o, s) { const b = Array(64).fill('.'); for (const k in o) b[sqIdx(k)] = o[k]; let out = ''; for (let r = 0; r < 8; r++) { let e = 0; for (let c = 0; c < 8; c++) { const p = b[r * 8 + c]; if (p === '.') e++; else { if (e) { out += e; e = 0; } out += p; } } if (e) out += e; if (r < 7) out += '/'; } return out + ' ' + (s || 'w') + ' - - 0 1'; }
+
+// ---------- lessons ----------
+const LESSONS = [
+ { id: 'board', title: 'Bàn cờ và tên các ô', steps: [
+  { type: 'info', fen: EMPTY, text: `<p>Cờ vua chơi trên bàn 8 × 8 = 64 ô, xen kẽ sáng và tối.</p><p><b>Cột</b> (dọc) đặt tên bằng chữ <b>a → h</b>, từ trái sang phải phía bạn. <b>Hàng</b> (ngang) đánh số <b>1 → 8</b>, từ phía bạn đi lên.</p><p>Tên một ô = chữ cột + số hàng. Ô ở cột e, hàng 4 tên là <b>e4</b>. Chữ và số được in nhỏ ở mép bàn cờ để bạn dò.</p>` },
+  { type: 'click', fen: EMPTY, targets: ['e4', 'a1', 'h8', 'd5', 'c2', 'g6'], text: 'Bấm vào ô <b>{t}</b>. (Dò chữ cột ở mép dưới, số hàng ở mép trái.)' },
+  { type: 'info', fen: START, text: `<p>Đây là thế cờ lúc bắt đầu. Quân <b>Trắng</b> ở hàng 1–2, quân <b>Đen</b> ở hàng 7–8. <b>Trắng luôn đi trước</b>, sau đó hai bên lần lượt mỗi người một nước.</p><p>Mẹo bày bàn cờ thật: ô ở góc dưới bên phải của mỗi người chơi luôn là ô <b>sáng</b>.</p><p>Mỗi bên có 16 quân: 1 Vua, 1 Hậu, 2 Xe, 2 Tượng, 2 Mã, 8 Tốt. Các bài tiếp theo dạy cách đi của từng quân.</p>` },
+ ]},
+ { id: 'rook', title: 'Xe ♜', steps: [
+  { type: 'stars', fen: F({ a1: 'R' }), hero: 'a1', stars: ['a7', 'e7', 'e2'], text: `<p><b>Xe</b> đi thẳng theo hàng ngang hoặc cột dọc, bao nhiêu ô cũng được.</p><p>Bấm vào Xe để thấy các ô nó đi được (chấm xanh), rồi bấm vào ô muốn đến. Hãy ăn hết các ngôi sao.</p>` },
+  { type: 'stars', fen: F({ a1: 'R', c1: 'P', f4: 'P' }), hero: 'a1', stars: ['e1', 'e8', 'h8'], text: `<p>Xe <b>không nhảy qua</b> được quân khác. Tốt trắng ở c1 chặn đường sang phải — hãy đi vòng để tới ngôi sao e1.</p>` },
+ ]},
+ { id: 'bishop', title: 'Tượng ♝', steps: [
+  { type: 'stars', fen: F({ c1: 'B' }), hero: 'c1', stars: ['f4', 'd6', 'g3'], text: `<p><b>Tượng</b> đi chéo, bao nhiêu ô cũng được, không nhảy qua quân khác.</p><p>Để ý: Tượng đứng ô tối thì mãi mãi chỉ đi trên ô tối. Mỗi bên có một Tượng ô sáng và một Tượng ô tối.</p>` },
+  { type: 'stars', fen: F({ f1: 'B' }), hero: 'f1', stars: ['b5', 'e8', 'h5', 'd1'], text: '<p>Tượng ô sáng: ăn hết các ngôi sao.</p>' },
+ ]},
+ { id: 'queen', title: 'Hậu ♛', steps: [
+  { type: 'stars', fen: F({ d1: 'Q' }), hero: 'd1', stars: ['d5', 'h5', 'e8', 'a4'], text: `<p><b>Hậu</b> là quân mạnh nhất: đi như Xe cộng với Tượng — thẳng hoặc chéo, bao xa cũng được.</p>` },
+ ]},
+ { id: 'king', title: 'Vua ♚', steps: [
+  { type: 'stars', fen: F({ e1: 'K' }), hero: 'e1', stars: ['d2', 'd3', 'e4', 'f4', 'g3'], text: `<p><b>Vua</b> đi 1 ô theo mọi hướng (thẳng hoặc chéo).</p><p>Vua là quân quan trọng nhất: khi Vua bị bắt mà không thoát được (chiếu hết), bạn thua ván.</p>` },
+ ]},
+ { id: 'knight', title: 'Mã ♞', steps: [
+  { type: 'stars', fen: F({ b1: 'N' }), hero: 'b1', stars: ['c3', 'd5', 'f6', 'e4'], text: `<p><b>Mã</b> đi hình chữ L: 2 ô theo một hướng thẳng rồi rẽ 1 ô sang ngang (hoặc 1 ô rồi 2 ô).</p><p>Mỗi lần đi, Mã luôn đổi màu ô: từ ô sáng sang ô tối và ngược lại.</p>` },
+  { type: 'stars', fen: F({ g1: 'N', f1: 'P', f2: 'P', g2: 'P', h2: 'P' }), hero: 'g1', stars: ['f3', 'g5', 'h7'], text: `<p>Mã là quân <b>duy nhất nhảy qua</b> được quân khác. Các Tốt vây quanh không cản được nó.</p>` },
+ ]},
+ { id: 'pawn', title: 'Tốt ♟', steps: [
+  { type: 'stars', fen: F({ e2: 'P' }), hero: 'e2', stars: ['e4', 'e5', 'e6'], text: `<p><b>Tốt</b> đi thẳng về phía trước 1 ô. Riêng nước đầu tiên của mỗi Tốt được chọn đi 1 hoặc 2 ô.</p><p>Tốt <b>không bao giờ đi lùi</b>.</p>` },
+  { type: 'captures', fen: F({ b2: 'P', c3: 'p', d4: 'n', d5: 'p' }), hero: 'b2', targets: ['c3', 'd4'], text: `<p>Tốt đi thẳng nhưng <b>ăn chéo</b>: ăn quân đối phương ở ô chéo ngay phía trước.</p><p>Hãy ăn quân ở c3 rồi d4. Để ý: sau đó Tốt bị Tốt đen ở d5 chặn ngay trước mặt — Tốt không ăn thẳng được.</p>` },
+  { type: 'stars', fen: F({ e6: 'P' }), hero: 'e6', stars: ['e8'], text: `<p>Khi Tốt đi tới hàng cuối cùng, nó được <b>phong cấp</b>: đổi thành Hậu, Xe, Tượng hoặc Mã. Gần như lúc nào cũng nên chọn Hậu.</p><p>Hãy đưa Tốt tới e8.</p>` },
+ ]},
+ { id: 'setup', title: 'Vị trí các quân khi bắt đầu', steps: [
+  { type: 'click', fen: START, targets: ['d1', 'e1', 'd8', 'b1', 'f8'], prompts: ['Bấm vào <b>Hậu trắng</b>.', 'Bấm vào <b>Vua trắng</b>.', 'Bấm vào <b>Hậu đen</b>.', 'Bấm vào một <b>Mã trắng</b> ở cột b.', 'Bấm vào <b>Tượng đen</b> ở cột f.'], text: `<p>Hàng cuối của mỗi bên xếp từ ngoài vào: <b>Xe – Mã – Tượng – Hậu – Vua – Tượng – Mã – Xe</b>. Hàng trước là 8 Tốt.</p><p>Mẹo: <b>Hậu đứng ô cùng màu với mình</b> — Hậu trắng ở ô sáng d1, Hậu đen ở ô tối d8.</p>` },
+ ]},
+ { id: 'capture', title: 'Ăn quân', steps: [
+  { type: 'captures', fen: F({ d1: 'Q', d5: 'p', a5: 'n', a8: 'b' }), hero: 'd1', targets: ['d5', 'a5', 'a8'], text: `<p>Mọi quân (trừ Tốt) <b>ăn đúng theo cách nó đi</b>: đi vào ô có quân đối phương thì quân đó bị loại khỏi bàn.</p><p>Dùng Hậu ăn hết quân đen. (Trong bài này quân đen đứng yên.)</p>` },
+  { type: 'captures', fen: F({ c3: 'N', e4: 'p', f6: 'b', h5: 'r' }), hero: 'c3', targets: ['e4', 'f6', 'h5'], text: '<p>Bây giờ dùng Mã ăn hết quân đen.</p>' },
+ ]},
+ { id: 'value', title: 'Giá trị các quân', steps: [
+  { type: 'info', fen: START, text: `<p>Để biết đổi quân có lợi hay không, người chơi dùng bảng điểm:</p><p>Tốt = <b>1</b>, Mã = <b>3</b>, Tượng = <b>3</b>, Xe = <b>5</b>, Hậu = <b>9</b>. Vua thì vô giá.</p><p>Ví dụ: mất Mã (3) để ăn Xe (5) là lời 2 điểm. Mất Hậu (9) để ăn Tốt (1) là lỗ nặng.</p>` },
+  { type: 'move', fen: '6k1/8/4r3/1p6/3N4/8/8/6K1 w - - 0 1', goal: 'capture', piece: 'r', text: '<p>Mã trắng có thể ăn Tốt b5 hoặc Xe e6. Hãy ăn quân <b>đáng giá hơn</b>.</p>', ok: 'Đúng! Xe đáng 5 điểm, Tốt chỉ 1.', wrong: 'Tốt chỉ đáng 1 điểm. Còn quân nào giá trị hơn mà Mã ăn được?' },
+  { type: 'move', fen: '6k1/8/4p3/3p4/n7/8/8/3Q2K1 w - - 0 1', goal: 'capture', piece: 'n', text: '<p>Hậu ăn được Tốt d5 hoặc Mã a4. Nhưng có một quân đang được <b>bảo vệ</b> — ăn nó thì Hậu bị ăn lại. Chọn nước ăn an toàn.</p>', ok: 'Chính xác! Mã a4 không được ai bảo vệ, bạn lời 3 điểm miễn phí.', wrong: 'Tốt d5 được Tốt e6 bảo vệ: ăn xong Hậu (9 điểm) sẽ bị Tốt ăn lại. Hãy tìm quân không được bảo vệ.' },
+ ]},
+ { id: 'check', title: 'Chiếu Vua', steps: [
+  { type: 'move', fen: '4k3/8/8/8/8/8/8/R5K1 w - - 0 1', goal: 'check', text: `<p>Khi một quân tấn công Vua đối phương, ta nói đang <b>chiếu</b>. Bên bị chiếu bắt buộc phải thoát chiếu ngay ở nước tiếp theo.</p><p>Hãy dùng Xe chiếu Vua đen.</p>`, ok: 'Chiếu! Vua đen đang bị Xe tấn công.', wrong: 'Nước này chưa tấn công Vua đen. Xe cần đứng cùng hàng hoặc cùng cột với Vua, không bị chặn.' },
+  { type: 'move', fen: '4k3/8/8/8/4N3/8/8/6K1 w - - 0 1', goal: 'check', text: '<p>Bây giờ hãy chiếu bằng Mã.</p>', ok: 'Chiếu! Mã chiếu không thể bị chặn vì Mã nhảy qua quân.', wrong: 'Mã ở ô đó chưa chạm tới Vua đen. Hình chữ L từ Mã phải rơi đúng ô e8.' },
+ ]},
+ { id: 'escape', title: 'Thoát chiếu', steps: [
+  { type: 'info', fen: 'k3r3/8/8/8/8/8/8/4K3 w - - 0 1', text: `<p>Khi bị chiếu, có đúng <b>3 cách</b> thoát:</p><p>1. <b>Chạy Vua</b> sang ô an toàn.<br>2. <b>Chặn</b>: đặt một quân vào giữa.<br>3. <b>Ăn</b> quân đang chiếu.</p><p>Không được đi nước nào khác. Và tuyệt đối không được đi nước khiến Vua mình bị chiếu.</p>` },
+  { type: 'move', fen: 'k3r3/8/8/8/8/8/8/4K3 w - - 0 1', goal: 'escape', text: '<p>Xe đen đang chiếu theo cột e. Không có quân để chặn hay ăn — hãy <b>chạy Vua</b>. Để ý ô e2 vẫn nằm trên cột e nên không an toàn.</p>', ok: 'An toàn! Vua đã rời khỏi cột e.' },
+  { type: 'move', fen: '6k1/5ppp/8/8/8/8/3R1PPP/r5K1 w - - 0 1', goal: 'escape', text: '<p>Xe đen chiếu theo hàng 1. Vua bị chính Tốt nhà kẹt lại, không chạy được. Hãy <b>chặn</b> đường chiếu.</p>', ok: 'Chặn thành công! Xe trắng đứng giữa Vua và Xe đen.' },
+  { type: 'move', fen: '6k1/5ppp/8/8/8/8/5PPP/R3q1K1 w - - 0 1', goal: 'escape', text: '<p>Hậu đen chiếu. Vua không chạy được, cũng không chặn được. Còn cách cuối: <b>ăn</b> quân đang chiếu.</p>', ok: 'Tuyệt! Xe ăn Hậu — vừa thoát chiếu vừa lời 9 điểm.' },
+ ]},
+ { id: 'mate', title: 'Chiếu hết', steps: [
+  { type: 'move', fen: '6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1', goal: 'mate', text: `<p><b>Chiếu hết</b>: Vua bị chiếu và không có cách nào thoát (không chạy, không chặn, không ăn được). Ai bị chiếu hết thì thua — đây là mục tiêu của ván cờ.</p><p>Vua đen bị chính các Tốt của mình chắn lối. Hãy chiếu hết trong 1 nước.</p>`, ok: 'Chiếu hết! Đây là thế “chiếu hết hàng cuối” — rất hay gặp.', wrong: 'Vua đen vẫn còn đường thoát. Gợi ý: hàng cuối của Đen đang trống.' },
+  { type: 'move', fen: '7k/8/6K1/8/8/8/8/3Q4 w - - 0 1', goal: 'mate', text: '<p>Vua trắng đã khống chế g7, h7. Hãy dùng Hậu chiếu hết.</p>', ok: 'Chiếu hết! Vua và Hậu phối hợp: Vua giữ các ô sát bên, Hậu chiếu.', wrong: 'Vua đen vẫn thoát được. Ô g8 cũng phải bị khống chế.' },
+  { type: 'move', fen: '6k1/R7/8/8/8/8/8/1R4K1 w - - 0 1', goal: 'mate', text: '<p>Xe a7 đã chặn cả hàng 7. Hãy chiếu hết bằng Xe còn lại.</p>', ok: 'Chiếu hết! Kiểu “hai Xe thay nhau” này dùng để thắng khi còn nhiều quân lớn.', wrong: 'Chưa chiếu hết. Vua đen đang ở hàng 8 — hãy chiếu theo hàng đó.' },
+ ]},
+ { id: 'stalemate', title: 'Hết nước và hòa', steps: [
+  { type: 'info', fen: '7k/5Q2/6K1/8/8/8/8/8 b - - 0 1', text: `<p><b>Hết nước (pat)</b>: đến lượt một bên mà bên đó không còn nước hợp lệ nào, nhưng Vua <b>không</b> bị chiếu → ván cờ <b>hòa</b>.</p><p>Trên bàn: Đen đến lượt, Vua h8 không bị chiếu nhưng ô nào cũng bị khống chế. Trắng hơn cả Hậu mà chỉ được hòa! Đây là cái bẫy hay gặp nhất của người mới.</p><p>Các trường hợp hòa khác: hai bên lặp lại cùng thế cờ 3 lần; 50 nước liền không ai ăn quân hay đi Tốt; không đủ quân để chiếu hết (ví dụ chỉ còn hai Vua).</p>` },
+  { type: 'move', fen: '7k/3Q4/6K1/8/8/8/8/8 w - - 0 1', goal: 'mate', text: '<p>Hãy chiếu hết — cẩn thận đừng vây kín Vua mà không chiếu.</p>', ok: 'Chiếu hết! Bạn đã tránh được bẫy hết nước.', wrong: 'Vua đen vẫn còn đường thoát. Hãy chiếu sao cho mọi ô quanh Vua đều bị khống chế.' },
+ ]},
+ { id: 'castle', title: 'Nhập thành', steps: [
+  { type: 'move', fen: 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1', goal: 'castleK', text: `<p><b>Nhập thành</b> là nước đặc biệt duy nhất đi hai quân một lúc: Vua đi 2 ô về phía một Xe, rồi Xe nhảy qua đứng sát bên kia Vua. Nhờ đó Vua trốn vào góc an toàn và Xe ra trận.</p><p>Điều kiện: Vua và Xe đó <b>chưa đi lần nào</b>; giữa chúng không có quân; Vua <b>không đang bị chiếu</b> và không đi qua hay đứng vào ô bị tấn công.</p><p>Hãy nhập thành cánh Vua: bấm Vua e1 rồi bấm g1.</p>`, ok: 'Nhập thành cánh Vua (ký hiệu O-O): Vua về g1, Xe về f1.', wrong: 'Hãy bấm Vua e1, rồi bấm ô g1.' },
+  { type: 'move', fen: 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1', goal: 'castleQ', text: '<p>Bây giờ nhập thành cánh Hậu: Vua e1 đi 2 ô sang c1.</p>', ok: 'Nhập thành cánh Hậu (O-O-O): Vua về c1, Xe về d1.', wrong: 'Hãy bấm Vua e1, rồi bấm ô c1.' },
+ ]},
+ { id: 'ep', title: 'Bắt Tốt qua đường', steps: [
+  { type: 'move', fen: 'rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3', goal: 'ep', text: `<p>Luật đặc biệt: khi Tốt đối phương đi 2 ô và dừng <b>ngay cạnh</b> Tốt của bạn, bạn được ăn nó như thể nó chỉ đi 1 ô — gọi là <b>bắt Tốt qua đường</b>.</p><p>Đen vừa đi Tốt d7 → d5, đứng cạnh Tốt trắng e5. Hãy bắt qua đường: Tốt e5 đi chéo tới d6. Chỉ được làm <b>ngay nước kế tiếp</b>, để sau là mất quyền.</p>`, ok: 'Đã bắt Tốt qua đường! Tốt đen ở d5 bị loại dù Tốt trắng đứng ở d6.', wrong: 'Hãy bấm Tốt e5 rồi bấm ô d6.' },
+ ]},
+ { id: 'opening', title: 'Nguyên tắc khai cuộc', steps: [
+  { type: 'info', fen: START, text: `<p>Ba việc cần làm trong khoảng 10 nước đầu:</p><p>1. <b>Chiếm trung tâm</b> (các ô d4, e4, d5, e5) bằng Tốt e, Tốt d.<br>2. <b>Ra quân nhỏ</b>: đưa Mã, Tượng ra khỏi hàng cuối. Mã thường ra trước Tượng.<br>3. <b>Nhập thành sớm</b> để Vua an toàn.</p><p>Tránh: đưa Hậu ra quá sớm, đi một quân nhiều lần, đi Tốt biên.</p>` },
+  { type: 'move', fen: START, goal: 'list', moves: ['e2e4', 'd2d4', 'g1f3', 'c2c4', 'b1c3'], text: '<p>Hãy đi một nước mở đầu tốt.</p>', ok: 'Nước mở đầu tốt: chiếm hoặc khống chế trung tâm.', wrong: 'Nước này chưa giúp tranh trung tâm. Thử Tốt e hoặc Tốt d tiến 2 ô, hoặc ra Mã.' },
+  { type: 'move', fen: 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2', goal: 'list', moves: ['g1f3', 'b1c3', 'f1c4', 'f1b5', 'd2d4'], text: '<p>Sau 1. e4 e5, hãy <b>ra một quân nhỏ</b> (Mã hoặc Tượng).</p>', ok: 'Đúng tinh thần: ra quân và nhắm vào trung tâm.', wrong: 'Hãy ra Mã hoặc Tượng — chúng đang nằm im ở hàng 1.' },
+ ]},
+ { id: 'play', title: 'Ván đầu tiên', steps: [
+  { type: 'info', fen: START, action: 'play', text: `<p>Bạn đã biết đủ luật để chơi! Trong ván đấu, thầy sẽ:</p><p>• Hiện chấm xanh các ô đi được khi bấm vào quân.<br>• Khoanh đỏ quân của bạn đang bị đe doạ.<br>• Chấm điểm và giải thích từng nước, dừng lại cho bạn đi lại khi sai.<br>• Gợi ý khi bạn bí.</p><p>Thói quen quan trọng nhất trước mỗi nước: <b>“Đối phương vừa đi để làm gì? Sau nước của mình, họ ăn được gì?”</b></p>` },
+ ]},
+];
+
+// ---------- state ----------
+if (!store.chess) store.chess = {};
+const CS = store.chess;
+CS.games = CS.games || []; CS.lessons = CS.lessons || {}; CS.tags = CS.tags || {};
+CS.opts = Object.assign({ threats: true, opps: false, pause: true }, CS.opts || {});
+const opts = CS.opts;
+let mode = 'lesson', C = null, L = null, busy = false, sel = -1, legalFrom = [], hintMove = 0, hintSq = -1, hintStage = 0, animMove = 0;
+const save = () => saveStore();
+
+// ---------- helpers ----------
+const uci = m => sqName(mf(m)) + sqName(mt(m));
+function san(pos, m) {
+  const f = mf(m), t = mt(m), pr = mp(m), p = pos.b[f], lp = p.toLowerCase();
+  const cap = pos.b[t] !== '.' || (lp === 'p' && t === pos.ep);
+  let s;
+  if (lp === 'k' && Math.abs(t - f) === 2) s = t > f ? 'O-O' : 'O-O-O';
+  else if (lp === 'p') { s = cap ? 'abcdefgh'[f & 7] + 'x' + sqName(t) : sqName(t); if (pr) s += '=' + LET[PR[pr]]; }
+  else {
+    s = LET[lp];
+    const oth = pos.legal().filter(x => x !== m && mt(x) === t && pos.b[mf(x)] === p);
+    if (oth.length) { const sf = oth.some(x => (mf(x) & 7) === (f & 7)), sr = oth.some(x => (mf(x) >> 3) === (f >> 3)); s += !sf ? 'abcdefgh'[f & 7] : !sr ? String(8 - (f >> 3)) : sqName(f); }
+    if (cap) s += 'x'; s += sqName(t);
+  }
+  pos.make(m); if (pos.inCheck(pos.side)) s += pos.legal().length ? '+' : '#'; pos.unmake();
+  return s;
+}
+function human(pos, m) {
+  const f = mf(m), t = mt(m), p = pos.b[f], lp = p.toLowerCase();
+  if (lp === 'k' && Math.abs(t - f) === 2) return (t > f ? 'Nhập thành cánh Vua' : 'Nhập thành cánh Hậu') + ` (${san(pos, m)})`;
+  const sn = san(pos, m);
+  return `${NM[lp]} ${sqName(f)}→${sqName(t)}` + (sn === sqName(t) ? '' : ` (${sn})`);
+}
+const pval = p => p.toLowerCase() === 'k' ? 10000 : V[p.toLowerCase()];
+const aval = p => p.toLowerCase() === 'k' ? 50 : V[p.toLowerCase()];
+function hanging(pos, s) {
+  if ((s === 1 ? pos.kw : pos.kb) < 0) return [];
+  const caps = pos.gen(true, -s).filter(m => { if (pos.b[mt(m)] === '.') return false; const sv = pos.side; pos.side = -s; pos.make(m); const ok = !pos.inCheck(-s); pos.unmake(); pos.side = sv; return ok; });
+  const by = {};
+  for (const m of caps) (by[mt(m)] = by[mt(m)] || []).push(aval(pos.b[mf(m)]));
+  const res = [];
+  for (const k in by) { const sq = +k, p = pos.b[sq]; if (p.toLowerCase() === 'k') continue; const v = V[p.toLowerCase()], mn = Math.min(...by[k]), def = pos.attacked(sq, s); if (!def || mn < v) res.push({ sq, p, v, def, gain: def ? v - mn : v }); }
+  return res.sort((a, b) => b.gain - a.gain);
+}
+function positional(pos, m) {
+  const f = mf(m), t = mt(m), p = pos.b[f], s = side(p), lp = p.toLowerCase(), home = s === 1 ? 7 : 0, fr = f >> 3, tc = t & 7, tr = t >> 3;
+  if (lp === 'k' && Math.abs(t - f) === 2) return 'nhập thành, đưa Vua vào nơi an toàn';
+  if ((lp === 'n' || lp === 'b') && fr === home) return 'ra quân, phát triển ' + NM[lp];
+  if (lp === 'p' && (tc === 3 || tc === 4) && (tr === 3 || tr === 4)) return 'chiếm trung tâm';
+  if (lp === 'p' && mp(m)) return 'phong cấp';
+  if (lp === 'p') return 'tiến Tốt, mở đường hoặc giành không gian';
+  if (lp === 'q') return 'đưa Hậu tới vị trí hoạt động hơn';
+  if (lp === 'r') return 'đưa Xe tới cột hoặc hàng hoạt động hơn';
+  if (lp === 'k') return 'di chuyển Vua';
+  return 'cải thiện vị trí ' + NM[lp];
+}
+function describe(pos, m) {
+  const f = mf(m), t = mt(m), p = pos.b[f], s = side(p), lp = p.toLowerCase();
+  let cap = pos.b[t]; if (lp === 'p' && t === pos.ep && cap === '.') cap = s === 1 ? 'p' : 'P';
+  const R = [], ownB = hanging(pos, s), enB = hanging(pos, -s);
+  pos.make(m);
+  const chk = pos.inCheck(-s);
+  if (chk && !pos.legal().length) R.push('chiếu hết'); else if (chk) R.push('chiếu Vua');
+  if (cap !== '.') R.push('ăn ' + NM[cap.toLowerCase()]);
+  if (mp(m)) R.push('phong cấp thành ' + NM[PR[mp(m)]]);
+  const newT = hanging(pos, -s).filter(x => x.v >= 300 && !enB.some(y => y.sq === x.sq));
+  if (newT.length >= 2) R.push('đe doạ cùng lúc ' + newT.slice(0, 2).map(x => NM[x.p.toLowerCase()]).join(' và '));
+  else if (newT.length === 1) R.push('đe doạ ăn ' + NM[newT[0].p.toLowerCase()]);
+  const ownA = hanging(pos, s);
+  const saved = ownB.filter(x => { const now = x.sq === f ? t : x.sq; return !ownA.some(y => y.sq === now); });
+  if (saved.length && cap === '.') R.push('giải nguy cho ' + NM[saved[0].p.toLowerCase()]);
+  pos.unmake();
+  if (!R.length) R.push(positional(pos, m));
+  return R;
+}
+function cp(s) { if (s > MATE - 500) return 3000 - (MATE - s) * 10; if (s < -MATE + 500) return -3000 + (MATE + s) * 10; return Math.max(-2500, Math.min(2500, s)); }
+const wp = s => 1 / (1 + Math.exp(-cp(s) / 300));
+const classify = lw => lw <= 0.025 ? 'best' : lw <= 0.07 ? 'good' : lw <= 0.15 ? 'inacc' : lw <= 0.3 ? 'mistake' : 'blunder';
+const accOf = lw => Math.max(0, Math.min(100, 103.17 * Math.exp(-0.04354 * lw * 100) - 3.17));
+const cap1 = s => s.charAt(0).toUpperCase() + s.slice(1);
+function pvText(pos, pv) { const c = pos.clone(), o = []; for (const m of pv) { if (!c.legal().includes(m)) break; o.push(san(c, m)); c.make(m); } return o.join(' '); }
+
+// ---------- rendering ----------
+const SQ = 60, svg = $('c-board');
+const curPos = () => mode === 'lesson' ? L.pos : C.pos;
+const flipped = () => mode === 'game' && C.userSide === -1;
+function xy(i) { let r = i >> 3, c = i & 7; if (flipped()) { r = 7 - r; c = 7 - c; } return [c * SQ, r * SQ]; }
+function draw() {
+  const pos = curPos(), fl = flipped();
+  let s = `<defs><marker id="cah" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--focus)"/></marker></defs>`;
+  for (let i = 0; i < 64; i++) { const [x, y] = xy(i); const light = ((i >> 3) + (i & 7)) % 2 === 0; s += `<rect class="${light ? 'sql' : 'sqd'}" x="${x}" y="${y}" width="${SQ}" height="${SQ}"/>`; }
+  const lm = pos.stack.length ? pos.stack[pos.stack.length - 1].m : 0;
+  if (lm && !(mode === 'lesson' && L.step.type !== 'move')) for (const q of [mf(lm), mt(lm)]) { const [x, y] = xy(q); s += `<rect class="clast" x="${x}" y="${y}" width="${SQ}" height="${SQ}"/>`; }
+  if (mode === 'lesson' && L.step.type !== 'move' && L.lastMv) for (const q of L.lastMv) { const [x, y] = xy(q); s += `<rect class="clast" x="${x}" y="${y}" width="${SQ}" height="${SQ}"/>`; }
+  // coords
+  for (let d = 0; d < 8; d++) {
+    const file = fl ? 7 - d : d, rank = fl ? d + 1 : 8 - d;
+    const lightB = (7 + d) % 2 === 0, lightL = d % 2 === 0;
+    s += `<text class="co ${lightB ? 'od' : 'ol'}" x="${d * SQ + SQ - 4}" y="${8 * SQ - 4}" text-anchor="end">${'abcdefgh'[file]}</text>`;
+    s += `<text class="co ${lightL ? 'od' : 'ol'}" x="3" y="${d * SQ + 13}">${rank}</text>`;
+  }
+  // check
+  for (const sd of [1, -1]) if (pos.inCheck(sd)) { const k = sd === 1 ? pos.kw : pos.kb; const [x, y] = xy(k); s += `<rect class="cchk" x="${x}" y="${y}" width="${SQ}" height="${SQ}"/>`; }
+  // hint square (click lessons)
+  if (hintSq >= 0) { const [x, y] = xy(hintSq); s += `<rect class="chint" x="${x + 3}" y="${y + 3}" width="${SQ - 6}" height="${SQ - 6}" rx="4"/>`; }
+  // stars
+  if (mode === 'lesson' && L.stars) for (const q of L.stars) { const [x, y] = xy(q); s += `<text class="star" x="${x + SQ / 2}" y="${y + SQ / 2 + 2}">★</text>`; }
+  // pieces
+  for (let i = 0; i < 64; i++) { const p = pos.b[i]; if (p === '.') continue; const [x, y] = xy(i); s += `<g class="cp ${p < 'a' ? 'w' : 'b'}" data-sq="${i}" transform="translate(${x + SQ / 2} ${y + SQ / 2})"><g class="mvw"><text y="2">${GLY[p.toLowerCase()]}</text></g></g>`; }
+  // overlays
+  if (mode === 'game' && pos.side === C.userSide && !frozen()) {
+    if (opts.threats) for (const h of hanging(pos, C.userSide)) { const [x, y] = xy(h.sq); s += `<circle class="cthr" cx="${x + 30}" cy="${y + 30}" r="27"/>`; }
+    if (opts.opps) for (const h of hanging(pos, -C.userSide)) { const [x, y] = xy(h.sq); s += `<circle class="copp" cx="${x + 30}" cy="${y + 30}" r="27"/>`; }
+  }
+  if (sel >= 0) { const [x, y] = xy(sel); s += `<rect class="csel" x="${x + 1.5}" y="${y + 1.5}" width="${SQ - 3}" height="${SQ - 3}"/>`;
+    const seen = new Set(); for (const m of legalFrom) { const t = mt(m); if (seen.has(t)) continue; seen.add(t); const [tx, ty] = xy(t); const capt = pos.b[t] !== '.' || (pos.b[sel].toLowerCase() === 'p' && t === pos.ep); s += capt ? `<circle class="ctgc" cx="${tx + 30}" cy="${ty + 30}" r="27"/>` : `<circle class="ctg" cx="${tx + 30}" cy="${ty + 30}" r="9"/>`; } }
+  if (hintStage === 1 && hintMove) { const [x, y] = xy(mf(hintMove)); s += `<rect class="chint" x="${x + 3}" y="${y + 3}" width="${SQ - 6}" height="${SQ - 6}" rx="4"/>`; }
+  if (hintStage === 2 && hintMove) { const [a, b] = xy(mf(hintMove)), [c, d] = xy(mt(hintMove)); const x1 = a + 30, y1 = b + 30, x2 = c + 30, y2 = d + 30, dx = x2 - x1, dy = y2 - y1, Ln = Math.hypot(dx, dy); s += `<line class="carrow" x1="${x1 + dx / Ln * 14}" y1="${y1 + dy / Ln * 14}" x2="${x2 - dx / Ln * 20}" y2="${y2 - dy / Ln * 20}" marker-end="url(#cah)"/>`; }
+  svg.innerHTML = s;
+  if (animMove && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const g = svg.querySelector(`.cp[data-sq="${mt(animMove)}"] .mvw`);
+    if (g && g.animate) { const [x1, y1] = xy(mf(animMove)), [x2, y2] = xy(mt(animMove)); g.animate([{ transform: `translate(${x1 - x2}px,${y1 - y2}px)` }, { transform: 'translate(0,0)' }], { duration: 200, easing: 'cubic-bezier(.3,.7,.3,1)' }); }
+  }
+  animMove = 0;
+  if (mode === 'game') renderMoves();
+  buttons();
+}
+function frozen() { return busy || (mode === 'game' && (C.over || C.paused)) || (mode === 'lesson' && L.done && L.step.type !== 'info'); }
+function status(t, o = {}) { const el = $('c-status'); el.className = o.alert ? 'alert' : ''; el.innerHTML = (o.spin ? '<span class="spinner"></span>' : '') + esc(t); }
+function setEval(w) {
+  $('c-evalfill').style.width = (wp(w) * 100).toFixed(1) + '%';
+  let t; if (w > MATE - 500) t = 'Trắng chiếu hết sau ' + Math.ceil((MATE - w) / 2); else if (w < -MATE + 500) t = 'Đen chiếu hết sau ' + Math.ceil((MATE + w) / 2); else { const v = cp(w) / 100; t = Math.abs(v) < 0.3 ? 'Cân bằng' : (v > 0 ? 'Trắng +' : 'Đen +') + Math.abs(v).toFixed(1); }
+  $('c-evaltxt').textContent = t;
+}
+function turnStatus() {
+  if (mode === 'lesson') { status(L.done && L.step.type !== 'info' ? 'Hoàn thành! Bấm “Bước tiếp”.' : 'Bài học: ' + LESSONS[L.li].title); return; }
+  if (C.over) { status(C.over.text); return; }
+  if (C.paused) { status('Đọc nhận xét, rồi chọn Thử lại hoặc Tiếp tục'); return; }
+  if (C.pos.side === C.userSide) { if (C.pos.inCheck(C.userSide)) status('Bạn đang bị chiếu! Phải thoát chiếu.', { alert: true }); else status('Lượt bạn (' + SN[C.userSide] + ')'); }
+  else status('Máy đang suy nghĩ…', { spin: true });
+}
+function buttons() {
+  const hintOk = mode === 'lesson' ? (!L.done && L.step.type !== 'info') : (!busy && !frozen() && C.pos.side === C.userSide);
+  $('c-hint').disabled = busy || !hintOk;
+  $('c-undo').disabled = busy || mode === 'lesson' || !C || !C.log.some(e => e.who === 'user');
+  $('c-evalwrap').style.display = mode === 'game' ? '' : 'none';
+}
+function syncLatest() { const Lt = $('c-latest'); Lt.innerHTML = ''; [...$('c-feed').children].slice(0, 2).forEach(c => Lt.appendChild(c.cloneNode(true))); }
+function card(cls, html) { const el = document.createElement('article'); el.className = 'card c-' + cls; el.innerHTML = html; $('c-feed').prepend(el); syncLatest(); return el; }
+function clearFeed() { $('c-feed').innerHTML = ''; syncLatest(); }
+function selTab(id) { document.querySelectorAll('#chApp .tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === id ? 'true' : 'false')); document.querySelectorAll('#chApp .tabpane').forEach(p => p.classList.toggle('on', p.id === 'ct-' + id)); }
+
+// ---------- input ----------
+function pickPromo(s) {
+  return new Promise(res => {
+    const el = $('c-promo'); el.hidden = false;
+    el.innerHTML = `<div class="pbox"><p>Phong cấp thành:</p><div class="prow">${[4, 3, 2, 1].map(pr => `<button class="btn" data-pr="${pr}"><span class="pg ${s === 1 ? 'w' : 'b'}">${GLY[PR[pr]]}</span>${NM[PR[pr]]}</button>`).join('')}</div></div>`;
+    el.onclick = e => { const b = e.target.closest('[data-pr]'); if (!b) return; el.hidden = true; res(+b.dataset.pr); };
+  });
+}
+svg.addEventListener('click', e => {
+  const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+  const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+  let c = Math.floor(p.x / SQ), r = Math.floor(p.y / SQ);
+  if (r < 0 || r > 7 || c < 0 || c > 7) return;
+  if (flipped()) { r = 7 - r; c = 7 - c; }
+  onSquare(r * 8 + c);
+});
+async function selectOrMove(sq, moves, allowFrom, cb) {
+  const pos = curPos();
+  if (sel >= 0) {
+    const cands = legalFrom.filter(m => mt(m) === sq);
+    if (cands.length) { let m = cands[0]; if (cands.length > 1) { const pr = await pickPromo(side(pos.b[sel])); m = cands.find(x => mp(x) === pr) || cands[0]; } sel = -1; legalFrom = []; cb(m); return; }
+  }
+  if (allowFrom(sq) && sq !== sel) { sel = sq; legalFrom = moves.filter(m => mf(m) === sq); }
+  else { sel = -1; legalFrom = []; }
+  draw();
+}
+function onSquare(sq) {
+  if (busy) return;
+  if (mode === 'lesson') { lessonSquare(sq); return; }
+  if (frozen() || C.pos.side !== C.userSide) return;
+  selectOrMove(sq, C.pos.legal(), q => side(C.pos.b[q]) === C.userSide, userMove);
+}
+
+// ---------- lessons ----------
+function startLesson(li, si) { mode = 'lesson'; L = { li, si: si || 0 }; hintMove = 0; hintStage = 0; hintSq = -1; $('c-sub').textContent = 'Học từ đầu'; loadStep(); }
+function loadStep() {
+  const st = LESSONS[L.li].steps[L.si];
+  Object.assign(L, { step: st, pos: new Pos(st.fen || EMPTY), done: st.type === 'info', stars: st.stars ? new Set(st.stars.map(sqIdx)) : null, hero: st.hero ? sqIdx(st.hero) : -1, ci: 0, fb: '', fbCls: '', count: 0, lastMv: null });
+  sel = -1; legalFrom = []; hintMove = 0; hintStage = 0; hintSq = -1;
+  renderLesson(); draw(); turnStatus();
+}
+function lessonText() {
+  const st = L.step;
+  if (st.type === 'click') { const t = st.targets[Math.min(L.ci, st.targets.length - 1)]; const pr = st.prompts ? st.prompts[Math.min(L.ci, st.prompts.length - 1)] : st.text.replace('{t}', t); return (st.prompts ? st.text : '') + `<p class="task">${L.done ? 'Hoàn thành!' : pr}</p>`; }
+  return st.text;
+}
+function renderLesson() {
+  const les = LESSONS[L.li], n = les.steps.length, el = $('c-lesson');
+  el.className = 'pzbanner on lesson-b';
+  const last = L.si === n - 1, lastLesson = L.li === LESSONS.length - 1;
+  const nextLabel = !last ? 'Bước tiếp' : (L.step.action === 'play' ? 'Chơi ván đầu tiên' : (lastLesson ? 'Hoàn thành' : 'Bài tiếp theo'));
+  el.innerHTML = `<div class="lhead"><b>Bài ${L.li + 1}: ${esc(les.title)}</b><span class="muted">Bước ${L.si + 1}/${n}</span></div><div class="ltext">${lessonText()}</div>${L.fb ? `<p class="lfb ${L.fbCls}">${L.fb}</p>` : ''}<div class="row">${L.si > 0 ? '<button class="btn small" data-l="prev">Bước trước</button>' : ''}${L.step.type !== 'info' ? '<button class="btn small" data-l="reset">Làm lại</button>' : ''}<button class="btn small primary" data-l="next" ${L.done ? '' : 'disabled'}>${nextLabel}</button><button class="btn small" data-l="exit">Thoát bài học</button></div>`;
+  el.querySelectorAll('[data-l]').forEach(b => b.onclick = () => lessonAction(b.dataset.l));
+}
+function lessonAction(a) {
+  if (busy) return;
+  if (a === 'prev') { L.si--; loadStep(); }
+  else if (a === 'reset') loadStep();
+  else if (a === 'exit') exitLesson();
+  else if (a === 'next') {
+    const les = LESSONS[L.li];
+    if (L.si < les.steps.length - 1) { L.si++; loadStep(); return; }
+    CS.lessons[les.id] = 1; save(); renderLearn(); renderProgress();
+    if (L.step.action === 'play') { exitLesson(true); newGame(1, 0); return; }
+    if (L.li < LESSONS.length - 1) { L.li++; L.si = 0; loadStep(); } else exitLesson();
+  }
+}
+function exitLesson(silent) {
+  mode = 'game'; L = null; $('c-lesson').className = 'pzbanner'; sel = -1; legalFrom = []; hintMove = 0; hintStage = 0; hintSq = -1;
+  $('c-sub').textContent = `${SN[C.userSide]} · ${LEVELS[C.level].name}`;
+  draw(); turnStatus();
+  if (!silent) card('info', '<p>Đã quay lại ván đấu.</p>');
+}
+function fb(text, cls) { L.fb = text; L.fbCls = cls || ''; renderLesson(); }
+function lessonDone(text) { L.done = true; CS.lessons[LESSONS[L.li].id] = CS.lessons[LESSONS[L.li].id] || 0; fb(text, 'ok'); turnStatus(); buttons(); }
+function heroMoves() { const pos = L.pos; return pos.gen(false, 1).filter(m => mf(m) === L.hero); }
+function lessonSquare(sq) {
+  const st = L.step;
+  if (st.type === 'info' || L.done) return;
+  hintSq = -1;
+  if (st.type === 'click') {
+    const t = sqIdx(st.targets[L.ci]);
+    if (sq === t) { L.ci++; if (L.ci >= st.targets.length) lessonDone('Rất tốt! Bạn đã đọc thành thạo tên các ô.'); else fb(`Đúng, đó là ô ${sqName(sq)}.`, 'ok'); }
+    else fb(st.prompts ? `Chưa đúng — bạn vừa bấm ô ${sqName(sq)}.` : `Đó là ô <b>${sqName(sq)}</b>, chưa phải ${st.targets[L.ci]}. Cột là chữ, hàng là số.`, 'bad');
+    draw(); return;
+  }
+  if (st.type === 'stars' || st.type === 'captures') { selectOrMove(sq, heroMoves(), q => q === L.hero, heroMove); return; }
+  if (st.type === 'move') selectOrMove(sq, L.pos.legal(), q => side(L.pos.b[q]) === L.pos.side, lessonMove);
+}
+function heroMove(m) {
+  const pos = L.pos, t = mt(m);
+  pos.make(m); pos.side = 1; pos.ep = -1; pos.rehash();
+  L.hero = t; L.count++; L.lastMv = [mf(m), t]; animMove = m; hintMove = 0; hintStage = 0;
+  const st = L.step;
+  if (st.type === 'stars') {
+    if (L.stars.has(t)) { L.stars.delete(t); if (!L.stars.size) lessonDone(mp(m) ? `Tốt đã phong cấp thành ${NM[PR[mp(m)]]}! Xong bài trong ${L.count} nước.` : `Xuất sắc! Bạn ăn hết sao trong ${L.count} nước.`); else fb(`Còn ${L.stars.size} ngôi sao.`, 'ok'); }
+    else fb(`Còn ${L.stars.size} ngôi sao.`);
+  } else {
+    const left = st.targets.filter(q => side(pos.b[sqIdx(q)]) === -1).length;
+    if (!left) lessonDone(`Đã ăn hết quân đen trong ${L.count} nước!`); else fb(`Còn ${left} quân phải ăn.`, 'ok');
+  }
+  draw();
+}
+function predOk(st, pos, m) {
+  const u = pos.stack[pos.stack.length - 1];
+  switch (st.goal) {
+    case 'check': return pos.inCheck(pos.side);
+    case 'mate': return pos.inCheck(pos.side) && !pos.legal().length;
+    case 'escape': return true;
+    case 'capture': return u.cap !== '.' && u.cap.toLowerCase() === st.piece;
+    case 'list': return st.moves.includes(uci(m));
+    case 'castleK': return uci(m) === 'e1g1';
+    case 'castleQ': return uci(m) === 'e1c1';
+    case 'ep': return u.epCap >= 0;
+  }
+  return false;
+}
+async function lessonMove(m) {
+  const pos = L.pos, st = L.step; busy = true;
+  pos.make(m); animMove = m; hintMove = 0; hintStage = 0; draw();
+  if (predOk(st, pos, m)) { busy = false; lessonDone(st.ok || 'Chính xác!'); draw(); return; }
+  let msg = st.wrong || 'Chưa đúng, thử lại nhé.';
+  if (st.goal === 'mate' && !pos.inCheck(pos.side) && !pos.legal().length) msg = '<b>Hết nước — hòa!</b> Vua đen không bị chiếu nhưng không còn nước đi nào. Khi đang thắng, hãy luôn để lại cho Vua đối phương một nước đi, hoặc chiếu thẳng.';
+  fb(msg, 'bad');
+  await tick(1300); pos.unmake(); busy = false; draw();
+}
+function bfsStar() {
+  const pos = L.pos, start = L.hero, piece = pos.b[start];
+  const prev = new Map([[start, -1]]), q = [start];
+  while (q.length) {
+    const cur = q.shift();
+    if (cur !== start && (L.stars ? L.stars.has(cur) : side(pos.b[cur]) === -1 && L.step.targets.includes(sqName(cur)))) {
+      let x = cur; while (prev.get(x) !== start) x = prev.get(x); return x;
+    }
+    if (cur !== start && side(pos.b[cur]) === -1) continue;
+    const saveP = pos.b[cur]; pos.b[start] = '.'; pos.b[cur] = piece;
+    const ms = pos.gen(false, 1).filter(m => mf(m) === cur);
+    pos.b[cur] = saveP; pos.b[start] = piece;
+    for (const m of ms) { const t = mt(m); if (!prev.has(t)) { prev.set(t, cur); q.push(t); } }
+  }
+  return -1;
+}
+function lessonHint() {
+  const st = L.step;
+  if (st.type === 'click') { hintSq = sqIdx(st.targets[L.ci]); fb(`Ô ${st.targets[L.ci]} nằm ở cột ${st.targets[L.ci][0]} (đếm theo chữ ở mép dưới) và hàng ${st.targets[L.ci][1]} (số ở mép trái). Ô đó đang được tô xanh.`); draw(); return; }
+  if (st.type === 'stars' || st.type === 'captures') { const t = bfsStar(); if (t >= 0) { hintMove = L.hero | (t << 6); hintStage = 2; fb(`Thử đi tới ô ${sqName(t)}.`); draw(); } return; }
+  if (st.type === 'move') {
+    const pos = L.pos;
+    for (const m of pos.legal()) { pos.make(m); const ok = predOk(st, pos, m); pos.unmake(); if (ok) { hintMove = m; hintStage = 2; fb(`Gợi ý: ${human(pos, m)}.`); draw(); return; } }
+  }
+}
+
+// ---------- game ----------
+function newGame(s, lv) {
+  C = { pos: new Pos(), userSide: s, level: lv, log: [], moves: [], over: null, paused: null, hints: 0, tips: {}, pre: null };
+  mode = 'game'; L = null; $('c-lesson').className = 'pzbanner';
+  sel = -1; legalFrom = []; hintMove = 0; hintStage = 0; hintSq = -1;
+  clearFeed();
+  card('info', `<p><b>Ván mới:</b> bạn cầm ${SN[s]}, máy ở mức ${LEVELS[lv].name}.</p><p>Bấm vào một quân của bạn để thấy chấm xanh ở các ô nó đi được, rồi bấm ô muốn đến. Vòng đỏ là quân của bạn đang bị đe doạ. Sau mỗi nước, thầy sẽ giải thích ngay dưới bàn cờ.</p><p class="tip">Trước mỗi nước, hãy tự hỏi: “Đối phương vừa đi để làm gì? Sau nước của mình, họ ăn được gì?”</p>`);
+  setEval(0); $('c-sub').textContent = `${SN[s]} · ${LEVELS[lv].name}`;
+  saveGame(); draw(); turnStatus(); selTab('coach');
+  if (s === -1) aiTurn();
+}
+function saveGame() { CS.game = { moves: C.moves, userSide: C.userSide, level: C.level, log: C.log, hints: C.hints, tips: C.tips, over: C.over }; save(); }
+function restoreGame() {
+  const g = CS.game; if (!g) return false;
+  try { C = { pos: new Pos(), userSide: g.userSide, level: g.level, log: g.log || [], moves: [], over: g.over || null, paused: null, hints: g.hints || 0, tips: g.tips || {}, pre: null }; for (const m of g.moves) { if (!C.pos.legal().includes(m)) throw 0; C.pos.make(m); C.moves.push(m); } }
+  catch (e) { return false; }
+  return true;
+}
+function getPre(pos) { if (C.pre && C.pre.h1 === pos.h1 && C.pre.h2 === pos.h2) return C.pre.an; const an = think(pos, ANA); C.pre = { h1: pos.h1, h2: pos.h2, an }; return an; }
+function openingTips(pos, m) {
+  const s = C.userSide, f = mf(m), t = mt(m), lp = pos.b[f].toLowerCase(), k = C.log.filter(e => e.who === 'user').length + 1, cap = pos.b[t] !== '.', out = [];
+  const add = (id, txt) => { if (!C.tips[id]) { C.tips[id] = 1; out.push(txt); } };
+  const chk = pos.inCheck(s);
+  if (lp === 'q' && k <= 6 && !cap) add('queen', 'Đừng đưa Hậu ra quá sớm: quân nhỏ của đối phương sẽ đuổi Hậu và bạn mất nhiều nước.');
+  if (lp === 'k' && Math.abs(t - f) !== 2 && k <= 12 && !chk) add('king', 'Đừng đi Vua sớm (trừ nhập thành) — Vua ở giữa bàn rất dễ bị tấn công.');
+  const prev = [...C.log].reverse().find(e => e.who === 'user');
+  if (prev && k <= 8 && mt(prev.m) === f && !cap && !chk) add('twice', 'Ở khai cuộc, hãy đưa nhiều quân khác nhau ra trận thay vì đi một quân nhiều lần.');
+  if (lp === 'p' && k <= 4 && ((f & 7) === 0 || (f & 7) === 7)) add('edge', 'Tốt biên (cột a, h) ít giúp tranh trung tâm. Ưu tiên Tốt e, Tốt d và ra Mã, Tượng.');
+  const homeMin = s === 1 ? [57, 58, 61, 62] : [1, 2, 5, 6];
+  if (k >= 7 && homeMin.filter(q => q !== f && 'nbNB'.includes(pos.b[q]) && side(pos.b[q]) === s).length >= 3) add('develop', 'Mã và Tượng phần lớn vẫn nằm ở hàng cuối. Hãy đưa chúng ra trận.');
+  const kHome = s === 1 ? 60 : 4, rights = s === 1 ? (pos.castle & 3) : (pos.castle & 12);
+  if (k >= 10 && (s === 1 ? pos.kw : pos.kb) === kHome && rights && !(lp === 'k' && Math.abs(t - f) === 2)) add('castle', 'Bạn chưa nhập thành. Nhập thành sớm giúp Vua an toàn và đưa Xe vào trận.');
+  return out;
+}
+async function userMove(m) {
+  busy = true; hintMove = 0; hintStage = 0;
+  const pos = C.pos, s = C.userSide;
+  status('Đang phân tích nước đi của bạn…', { spin: true }); draw(); await tick();
+  const an = getPre(pos);
+  const mvTxt = human(pos, m), sanU = san(pos, m), bestTxt = human(pos, an.m);
+  const capU = pos.b[mt(m)], capB = pos.b[mt(an.m)], bestR = describe(pos, an.m), userR = describe(pos, m);
+  const bestPV = an.pv && an.pv.length > 1 ? pvText(pos, an.pv.slice(0, 4)) : '';
+  const tips = openingTips(pos, m), idx = C.log.filter(e => e.who === 'user').length + 1;
+  pos.make(m); C.moves.push(m); animMove = m; draw(); await tick();
+  let rep = null, us;
+  if (!pos.legal().length) us = pos.inCheck(pos.side) ? MATE - 1 : 0;
+  else { rep = think(pos, { depth: Math.max(2, an.d - 1), time: ANA.time }); us = -rep.s; }
+  if (m === an.m) us = Math.max(us, an.s);
+  const lw = m === an.m ? 0 : Math.max(0, wp(an.s) - wp(us));
+  const cls = classify(lw), acc = accOf(lw);
+  setEval(us * s);
+  const msgs = [], tags = [];
+  const repTxt = rep ? human(pos, rep.m) : '', repCap = rep ? pos.b[mt(rep.m)] : '.';
+  if (cls === 'best' || cls === 'good') {
+    msgs.push(`${m === an.m ? 'Đúng nước mạnh nhất' : 'Nước đi tốt'}: ${userR.join(', ')}.`);
+    if (cls === 'good' && m !== an.m) msgs.push(`Mạnh hơn một chút là ${bestTxt} (${bestR.join(', ')}).`);
+  } else {
+    if (an.s > MATE - 200 && us < MATE - 200) { tags.push('mate'); msgs.push(`Bạn bỏ lỡ chiếu hết: ${bestTxt} dẫn tới chiếu hết sau ${Math.ceil((MATE - an.s) / 2)} nước.`); }
+    if (us < -MATE + 200 && an.s > -MATE + 200) { tags.push('mate'); msgs.push(`Nước này để đối phương chiếu hết: họ có ${repTxt}.`); }
+    else if (rep && repCap !== '.' && lw > 0.07) { tags.push('hang'); msgs.push(`Đối phương có thể đi ${repTxt} để ăn ${NM[repCap.toLowerCase()]} của bạn (${V[repCap.toLowerCase()] / 100} điểm).${capU !== '.' ? ' Cuộc đổi quân này không có lợi cho bạn.' : ''}`); }
+    else if (rep) { tags.push('pos'); msgs.push(`Sau nước này, đối phương có ${repTxt} (${describe(pos, rep.m).join(', ')}).`); }
+    if (capB !== '.' && capU === '.' && !tags.includes('mate')) { tags.push('miss'); msgs.push(`Bạn bỏ lỡ cơ hội: ${bestTxt} ăn được ${NM[capB.toLowerCase()]} (${V[capB.toLowerCase()] / 100} điểm).`); }
+    else if (!(an.s > MATE - 200)) msgs.push(`Nước tốt hơn: ${bestTxt} (${bestR.join(', ')}).${bestPV ? ' Diễn biến dự kiến: ' + bestPV + '.' : ''}`);
+    const lc = cp(an.s) - cp(us);
+    if (lc >= 60 && lc < 2000) msgs.push(`<span class="muted">Thiệt khoảng ${(lc / 100).toFixed(1)} điểm (1 điểm ≈ 1 Tốt).</span>`);
+    if (tags.includes('hang')) msgs.push('<span class="tip">Trước khi đi, hãy tự hỏi: “Sau nước này, đối phương ăn được quân nào của mình?”</span>');
+    else if (tags.includes('miss')) msgs.push('<span class="tip">Mỗi lượt, hãy rà soát theo thứ tự: nước chiếu, nước ăn quân, nước đe doạ.</span>');
+  }
+  for (const t of tips) { msgs.push(`<span class="tip"><b>Nguyên tắc:</b> ${t}</span>`); tags.push('opening'); }
+  C.log.push({ who: 'user', m, san: sanU, cls, lw, acc, tags });
+  const el = card(cls, `<header><span class="badge">${CLS[cls]}</span><span class="mv">${idx}. ${esc(mvTxt)}</span><span class="meta">chính xác ${Math.round(acc)}%</span></header>${msgs.map(x => `<p>${x}</p>`).join('')}`);
+  const end = endState();
+  if (end) { finish(end); busy = false; draw(); return; }
+  if (opts.pause && (cls === 'mistake' || cls === 'blunder')) {
+    C.paused = { m }; busy = false;
+    const a = document.createElement('div'); a.className = 'acts'; a.dataset.cpause = '1';
+    a.innerHTML = '<button class="btn small primary" data-cact="retry">Thử lại nước khác</button><button class="btn small" data-cact="go">Tiếp tục</button>';
+    el.appendChild(a); syncLatest(); turnStatus(); draw(); saveGame(); return;
+  }
+  await aiTurn();
+}
+function clearPause() { document.querySelectorAll('[data-cpause]').forEach(a => a.remove()); }
+document.addEventListener('click', e => { const b = e.target.closest('[data-cact]'); if (!b || !C || !C.paused) return; clearPause(); if (b.dataset.cact === 'retry') retry(); else { C.paused = null; aiTurn(); } });
+function retry() {
+  if (!C.paused) return; clearPause();
+  C.pos.unmake(); C.moves.pop(); C.log.pop(); C.paused = null;
+  card('info', '<p>Đã trả lại nước vừa rồi. Hãy tìm nước tốt hơn — có thể bấm <b>Gợi ý</b>.</p>');
+  saveGame(); draw(); turnStatus();
+}
+async function aiTurn() {
+  busy = true; turnStatus(); draw(); await tick(60);
+  const pos = C.pos, r = think(pos, LEVELS[C.level]);
+  if (!r) { busy = false; return; }
+  const m = r.m, txt = human(pos, m), sn = san(pos, m), why = describe(pos, m);
+  pos.make(m); C.moves.push(m); C.log.push({ who: 'ai', m, san: sn }); animMove = m; draw();
+  const end = endState();
+  if (end) { card('ai', `<p><b>Máy:</b> ${esc(txt)}</p>`); finish(end); busy = false; draw(); return; }
+  const warn = [];
+  if (pos.inCheck(C.userSide)) warn.push('<b>Bạn đang bị chiếu</b> — phải thoát chiếu: chạy Vua, chặn, hoặc ăn quân đang chiếu.');
+  const h = hanging(pos, C.userSide);
+  if (h.length && opts.threats) warn.push(`Chú ý: ${h.slice(0, 3).map(x => NM[x.p.toLowerCase()] + ' ' + sqName(x.sq)).join(', ')} của bạn đang bị đe doạ (vòng đỏ).`);
+  card('ai', `<p><b>Máy:</b> ${esc(txt)} <span class="muted">(${why.join(', ')})</span></p>${warn.map(w => `<p>${w}</p>`).join('')}`);
+  await tick(20);
+  const an = getPre(pos); setEval(an.s * pos.side);
+  busy = false; saveGame(); draw(); turnStatus();
+}
+function endState() {
+  const pos = C.pos;
+  if (!pos.legal().length) { if (pos.inCheck(pos.side)) return { winner: -pos.side, reason: 'chiếu hết' }; return { winner: 0, reason: 'hết nước (pat)' }; }
+  let n = 0; for (const h of pos.hist) if (h === pos.h1) n++;
+  if (n >= 2) return { winner: 0, reason: 'lặp lại thế cờ ba lần' };
+  if (pos.half >= 100) return { winner: 0, reason: 'luật 50 nước' };
+  if (pos.insufficient()) return { winner: 0, reason: 'không đủ quân để chiếu hết' };
+  return null;
+}
+function finish(end) {
+  const res = end.winner === 0 ? 'draw' : end.winner === C.userSide ? 'win' : 'loss';
+  const text = res === 'win' ? `Bạn thắng (${end.reason})!` : res === 'loss' ? `Bạn thua (${end.reason}).` : `Hoà (${end.reason}).`;
+  C.over = { res, text };
+  const um = C.log.filter(e => e.who === 'user'), acc = um.length ? um.reduce((a, e) => a + e.acc, 0) / um.length : 0;
+  const cnt = { best: 0, good: 0, inacc: 0, mistake: 0, blunder: 0 }, tg = {};
+  for (const e of um) { cnt[e.cls]++; for (const t of e.tags || []) tg[t] = (tg[t] || 0) + 1; }
+  for (const t in tg) CS.tags[t] = (CS.tags[t] || 0) + tg[t];
+  CS.games.push({ date: Date.now(), side: C.userSide, level: C.level, res, acc: Math.round(acc), n: um.length });
+  if (CS.games.length > 200) CS.games.shift();
+  const adv = [];
+  if (tg.hang) adv.push(`Bạn để mất quân ${tg.hang} lần. Trước khi buông quân, nhìn lại mọi quân đối phương xem quân nào ăn được quân mình.`);
+  if (tg.miss) adv.push(`Bạn bỏ lỡ ${tg.miss} cơ hội ăn quân. Mỗi lượt hãy rà Chiếu – Ăn – Doạ trước.`);
+  if (tg.mate) adv.push('Có lúc liên quan đến chiếu hết bị bỏ qua. Ôn lại bài “Chiếu hết” trong tab Học từ đầu.');
+  if (tg.opening) adv.push('Ôn lại bài “Nguyên tắc khai cuộc”.');
+  if (!adv.length) adv.push(acc >= 80 ? 'Ván đấu rất chắc chắn. Hãy thử tăng trình độ của máy.' : 'Xem lại các nước chấm cam, đỏ trong tab Nước đi.');
+  card('end', `<header><span class="mv">${esc(text)}</span></header><p>Độ chính xác: <b>${Math.round(acc)}%</b> qua ${um.length} nước. Xuất sắc ${cnt.best}, tốt ${cnt.good}, thiếu chính xác ${cnt.inacc}, sai lầm ${cnt.mistake}, sai lầm lớn ${cnt.blunder}. Đã dùng ${C.hints} lần gợi ý.</p>${adv.map(a => `<p class="tip">${a}</p>`).join('')}<div class="acts"><button class="btn small primary" data-copen="1">Chơi ván mới</button></div>`);
+  saveGame(); turnStatus(); renderProgress();
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-copen]')) openNew(); });
+function undo() {
+  if (busy || mode !== 'game') return;
+  if (C.paused) { retry(); return; }
+  let ok = false;
+  while (C.log.length) { const e = C.log[C.log.length - 1]; C.pos.unmake(); C.log.pop(); C.moves.pop(); if (e.who === 'user') { ok = true; break; } }
+  if (!ok) return;
+  C.over = null; sel = -1; legalFrom = []; hintMove = 0; hintStage = 0;
+  card('info', '<p>Đã đi lại một lượt.</p>'); saveGame(); draw(); turnStatus();
+}
+async function hint() {
+  if (busy) return;
+  if (mode === 'lesson') { lessonHint(); return; }
+  if (frozen() || C.pos.side !== C.userSide) return;
+  busy = true; status('Đang tìm nước tốt nhất…', { spin: true }); await tick();
+  const pos = C.pos, an = getPre(pos); C.hints++; busy = false;
+  hintStage = Math.min(2, hintStage + 1); hintMove = an.m;
+  const why = describe(pos, an.m);
+  if (hintStage === 1) card('hint', `<p><b>Gợi ý 1:</b> Hãy chú ý quân ${NM[pos.b[mf(an.m)].toLowerCase()]} ở ${sqName(mf(an.m))} (ô tô xanh). Ý tưởng: ${why.join(', ')}.</p><p class="muted">Bấm Gợi ý lần nữa để xem nước cụ thể.</p>`);
+  else { const pv = an.pv && an.pv.length > 1 ? pvText(pos, an.pv.slice(0, 5)) : ''; card('hint', `<p><b>Gợi ý 2:</b> ${esc(human(pos, an.m))} — ${why.join(', ')}.</p>${pv ? `<p class="muted">Diễn biến dự kiến: ${esc(pv)}.</p>` : ''}`); }
+  draw(); turnStatus(); saveGame();
+}
+
+// ---------- panels ----------
+function renderMoves() {
+  if (!C) return;
+  const cell = e => `${e.who === 'user' ? `<span class="dot ${e.cls}" title="${CLS[e.cls]}"></span>` : '<span class="dot"></span>'}${esc(e.san)}`;
+  const rows = []; let cur = null, n = 0, white = true;
+  for (const e of C.log) { if (white) { n++; cur = [n, cell(e), '']; rows.push(cur); } else { if (!cur) { n++; cur = [n, '…', '']; rows.push(cur); } cur[2] = cell(e); cur = null; } white = !white; }
+  $('c-mvbody').innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('') || '<tr><td colspan="3" class="muted">Chưa có nước nào.</td></tr>';
+}
+function renderLearn() {
+  const done = LESSONS.filter(l => CS.lessons[l.id]).length, next = LESSONS.findIndex(l => !CS.lessons[l.id]);
+  let s = `<p>Lộ trình dành cho người chưa biết chơi: mỗi bài vài phút, có bài tập ngay trên bàn cờ. Đã xong <b>${done}/${LESSONS.length}</b> bài.</p>`;
+  if (next >= 0) s += `<p><button class="btn primary" data-li="${next}">${done ? 'Học tiếp' : 'Bắt đầu học'}: Bài ${next + 1}</button></p>`;
+  s += '<ol class="llist">' + LESSONS.map((l, i) => `<li><button class="pzitem" data-li="${i}"><span><span class="t">${esc(l.title)}</span><br><span class="d">${l.steps.length} bước</span></span>${CS.lessons[l.id] ? '<span class="ok">Đã học</span>' : ''}</button></li>`).join('') + '</ol>';
+  s += `<h3>Ký hiệu nước đi</h3><p class="muted">Sách cờ tiếng Việt viết tắt: V = Vua, H = Hậu, X = Xe, T = Tượng, M = Mã; Tốt không có chữ. “x” là ăn quân, “+” là chiếu, “#” là chiếu hết, O-O là nhập thành. Ví dụ Mf3 = Mã đi tới f3.</p>`;
+  const el = $('ct-learn'); el.innerHTML = s;
+  el.querySelectorAll('[data-li]').forEach(b => b.onclick = () => { startLesson(+b.dataset.li); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+}
+function renderProgress() {
+  const el = $('ct-progress'), gs = CS.games, done = LESSONS.filter(l => CS.lessons[l.id]).length;
+  let s = `<div class="stats"><div class="stat"><b>${done}/${LESSONS.length}</b><span>bài học đã xong</span></div>`;
+  if (!gs.length) { el.innerHTML = s + `<div class="stat"><b>0</b><span>ván đã chơi</span></div></div><p class="muted">Hoàn thành ván đầu tiên để theo dõi độ chính xác và lỗi hay gặp.</p>`; return; }
+  const w = gs.filter(g => g.res === 'win').length, d = gs.filter(g => g.res === 'draw').length, l = gs.length - w - d, last = gs.slice(-10), avg = Math.round(last.reduce((a, g) => a + g.acc, 0) / last.length);
+  s += `<div class="stat"><b>${w}/${d}/${l}</b><span>thắng/hoà/thua</span></div><div class="stat"><b>${avg}%</b><span>chính xác (10 ván gần nhất)</span></div></div>`;
+  const pts = gs.slice(-20);
+  if (pts.length >= 2) { const W = 300, H = 70, xs = i => 8 + i * (W - 16) / (pts.length - 1), ys = v => H - 8 - (v / 100) * (H - 16); s += `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polyline fill="none" stroke="var(--jade)" stroke-width="2.5" points="${pts.map((g, i) => xs(i) + ',' + ys(g.acc)).join(' ')}"/>${pts.map((g, i) => `<circle cx="${xs(i)}" cy="${ys(g.acc)}" r="3" fill="${g.res === 'win' ? 'var(--jade)' : g.res === 'loss' ? 'var(--danger)' : 'var(--amber)'}"/>`).join('')}</svg>`; }
+  const t = CS.tags, items = [['hang', 'Để mất quân'], ['miss', 'Bỏ lỡ cơ hội ăn quân'], ['mate', 'Liên quan đến chiếu hết'], ['opening', 'Vi phạm nguyên tắc khai cuộc']].filter(x => t[x[0]]).sort((a, b) => t[b[0]] - t[a[0]]);
+  if (items.length) s += `<h3>Lỗi hay gặp nhất</h3><table class="moves"><tbody>${items.map(x => `<tr><td>${x[1]}</td><td style="text-align:right">${t[x[0]]} lần</td></tr>`).join('')}</tbody></table>`;
+  const r5 = gs.slice(-5); if (r5.length >= 3 && r5.filter(g => g.res === 'win').length >= 3) s += '<p class="tip" style="margin-top:12px">Bạn thắng phần lớn các ván gần đây — hãy nâng trình độ của máy.</p>';
+  s += `<h3>Các ván gần đây</h3><table class="moves"><tbody>${gs.slice(-8).reverse().map(g => `<tr><td>${new Date(g.date).toLocaleDateString('vi-VN')}</td><td>${SN[g.side]}, ${LEVELS[g.level].name}</td><td>${g.res === 'win' ? 'Thắng' : g.res === 'loss' ? 'Thua' : 'Hoà'}</td><td style="text-align:right">${g.acc}%</td></tr>`).join('')}</tbody></table>`;
+  el.innerHTML = s;
+}
+
+// ---------- wiring ----------
+document.querySelectorAll('#chApp .tabs button').forEach(b => b.onclick = () => selTab(b.dataset.tab));
+const dlg = $('c-dlg');
+$('c-optLevel').innerHTML = LEVELS.map((l, i) => `<label><input type="radio" name="clvl" value="${i}" ${i === 0 ? 'checked' : ''}><span>${l.name}<small>${l.desc}</small></span></label>`).join('');
+function openNew() { if (busy) return; if (C) { const r = document.querySelector(`input[name=clvl][value="${C.level}"]`); if (r) r.checked = true; const sd = document.querySelector(`input[name=cside][value="${C.userSide}"]`); if (sd) sd.checked = true; } if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); }
+$('c-new').onclick = openNew;
+$('c-dlgCancel').onclick = () => dlg.close();
+$('c-dlgStart').onclick = () => { const s = +document.querySelector('input[name=cside]:checked').value, lv = +document.querySelector('input[name=clvl]:checked').value; dlg.close(); newGame(s, lv); };
+$('c-hint').onclick = hint;
+$('c-undo').onclick = undo;
+$('c-theme').onclick = () => $('bTheme').click();
+for (const [id, k] of [['c-oThreat', 'threats'], ['c-oOpp', 'opps'], ['c-oPause', 'pause']]) { const el = $(id); el.checked = !!opts[k]; el.onchange = () => { opts[k] = el.checked; save(); draw(); }; }
+if (matchMedia('(max-width:920px)').matches) $('c-tgl').open = false;
+
+// init
+if (!restoreGame()) C = { pos: new Pos(), userSide: 1, level: 0, log: [], moves: [], over: null, paused: null, hints: 0, tips: {}, pre: null };
+renderLearn(); renderProgress();
+const firstTime = !Object.keys(CS.lessons).length && !CS.game;
+if (firstTime) {
+  card('info', '<p><b>Chào mừng bạn đến với cờ vua!</b> Vì bạn mới bắt đầu, hãy học theo các bài ở tab <b>Học từ đầu</b>: mỗi bài dạy một điều và có bài tập ngay trên bàn cờ. Bài 1 đã được mở sẵn.</p>');
+  startLesson(0);
+} else {
+  mode = 'game'; $('c-sub').textContent = `${SN[C.userSide]} · ${LEVELS[C.level].name}`;
+  if (CS.game) card('info', `<p>Đã mở lại ván cờ vua đang chơi dở (${C.moves.length} nước). Bài học vẫn ở tab Học từ đầu.</p>`);
+  selTab('coach'); draw(); turnStatus();
+}
+window.chessShown = () => {
+  draw(); turnStatus();
+  if (mode === 'game' && !C.over && !C.paused && C.pos.side !== C.userSide && !busy && C.moves.length) aiTurn();
+};
+})();
+
+</script>
+<script>
+(function(){const btns=document.querySelectorAll('.gamesw button');
+function show(g){document.getElementById('xqApp').hidden=g!=='xq';document.getElementById('chApp').hidden=g!=='ch';btns.forEach(b=>b.setAttribute('aria-pressed',b.dataset.g===g?'true':'false'));document.title=g==='ch'?'Luyện Cờ Vua':'Luyện Cờ Tướng';if(store.view!==g){store.view=g;saveStore();}if(g==='ch'&&window.chessShown)window.chessShown();}
+btns.forEach(b=>b.onclick=()=>show(b.dataset.g));show(store.view==='ch'?'ch':'xq');})();
 </script>
 </body>
 </html>
