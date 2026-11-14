@@ -234,6 +234,15 @@ svg#c-board{display:block;width:100%;height:auto;touch-action:manipulation;user-
 .llist{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px;margin:8px 0 14px;counter-reset:l}
 .llist li{counter-increment:l}
 .llist .t::before{content:counter(l) ". "}
+.netbar{margin-bottom:8px;padding:10px 12px;border-radius:8px;background:var(--panel);border:1px solid var(--jade)}
+.netbar[hidden]{display:none}
+.netbar .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.nlink{margin-top:6px;font-size:12.5px;word-break:break-all;color:var(--muted);user-select:all;-webkit-user-select:all}
+.ndot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:var(--amber);vertical-align:1px}
+.ndot.playing{background:var(--jade)}.ndot.closed,.ndot.error{background:var(--danger)}
+.joinrow{display:flex;gap:8px;margin:0 0 14px}
+.joinrow input{flex:1;min-width:0;font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-transform:uppercase;letter-spacing:2px}
+.dsep{font-size:13px;color:var(--muted);margin:-4px 0 6px}
 </style>
 </head>
 <body>
@@ -241,6 +250,7 @@ svg#c-board{display:block;width:100%;height:auto;touch-action:manipulation;user-
 <div class="app" id="xqApp">
   <main>
     <div class="brand"><span class="seal">象棋</span><h1>Luyện Cờ Tướng</h1><small id="sub"></small></div>
+    <div class="netbar" id="xq-net" hidden></div>
     <div class="pzbanner" id="pzb"></div>
     <div class="status"><div id="status" aria-live="polite"></div></div>
     <div class="evalwrap"><span>Thế cờ</span><div class="evalbar" title="Lợi thế: đỏ bên trái, đen bên phải"><i id="evalfill" style="width:50%"></i></div><span id="evaltxt">Cân bằng</span></div>
@@ -282,6 +292,7 @@ svg#c-board{display:block;width:100%;height:auto;touch-action:manipulation;user-
 <div class="app" id="chApp" hidden>
   <main>
     <div class="brand"><span class="seal ch">♞</span><h1>Luyện Cờ Vua</h1><small id="c-sub"></small></div>
+    <div class="netbar" id="ch-net" hidden></div>
     <div class="pzbanner" id="c-lesson"></div>
     <div class="status"><div id="c-status" aria-live="polite"></div></div>
     <div class="evalwrap" id="c-evalwrap"><span>Thế cờ</span><div class="evalbar cbar" title="Lợi thế: trắng bên trái, đen bên phải"><i id="c-evalfill" style="width:50%"></i></div><span id="c-evaltxt">Cân bằng</span></div>
@@ -319,25 +330,41 @@ svg#c-board{display:block;width:100%;height:auto;touch-action:manipulation;user-
 
 <dialog id="dlgNew">
   <h2>Ván mới</h2>
-  <div><b>Bạn cầm quân</b></div>
+  <div><b>Hình thức</b></div>
+  <div class="opts">
+    <label><input type="radio" name="mode" value="ai" checked><span>Chơi với máy<small>Có thầy chấm điểm, giải thích và gợi ý</small></span></label>
+    <label><input type="radio" name="mode" value="local"><span>2 người cùng máy<small>Hai người thay phiên bấm trên một điện thoại hoặc máy tính</small></span></label>
+    <label><input type="radio" name="mode" value="online"><span>2 người qua mạng: tạo phòng<small>Tạo phòng rồi gửi link mời cho bạn bè</small></span></label>
+  </div>
+  <div class="dsep">Bạn bè đã gửi mã phòng?</div>
+  <div class="joinrow"><input id="joinCode" maxlength="6" placeholder="Mã phòng" autocomplete="off" aria-label="Mã phòng"><button class="btn" id="joinBtn">Vào phòng</button></div>
+  <div id="secSide"><div><b>Bạn cầm quân</b></div>
   <div class="opts" id="optSide">
     <label><input type="radio" name="side" value="1" checked><span>Đỏ<small>Đi trước — phù hợp để luyện khai cuộc tấn công</small></span></label>
     <label><input type="radio" name="side" value="-1"><span>Đen<small>Máy đi trước — luyện cách phòng thủ và phản công</small></span></label>
-  </div>
-  <div><b>Trình độ của máy</b></div>
-  <div class="opts" id="optLevel"></div>
+  </div></div>
+  <div id="secLevel"><div><b>Trình độ của máy</b></div>
+  <div class="opts" id="optLevel"></div></div>
   <div class="dlgrow"><button class="btn" id="dlgCancel">Huỷ</button><button class="btn primary" id="dlgStart">Bắt đầu</button></div>
 </dialog>
 
 <dialog id="c-dlg">
   <h2>Ván cờ vua mới</h2>
-  <div><b>Bạn cầm quân</b></div>
+  <div><b>Hình thức</b></div>
+  <div class="opts">
+    <label><input type="radio" name="cmode" value="ai" checked><span>Chơi với máy<small>Có thầy chấm điểm, giải thích và gợi ý — hợp với người mới</small></span></label>
+    <label><input type="radio" name="cmode" value="local"><span>2 người cùng máy<small>Hai người thay phiên bấm trên một điện thoại hoặc máy tính</small></span></label>
+    <label><input type="radio" name="cmode" value="online"><span>2 người qua mạng: tạo phòng<small>Tạo phòng rồi gửi link mời cho bạn bè</small></span></label>
+  </div>
+  <div class="dsep">Bạn bè đã gửi mã phòng?</div>
+  <div class="joinrow"><input id="c-joinCode" maxlength="6" placeholder="Mã phòng" autocomplete="off" aria-label="Mã phòng"><button class="btn" id="c-joinBtn">Vào phòng</button></div>
+  <div id="c-secSide"><div><b>Bạn cầm quân</b></div>
   <div class="opts">
     <label><input type="radio" name="cside" value="1" checked><span>Trắng<small>Đi trước — nên chọn khi mới học</small></span></label>
     <label><input type="radio" name="cside" value="-1"><span>Đen<small>Máy đi trước</small></span></label>
-  </div>
-  <div><b>Trình độ của máy</b></div>
-  <div class="opts" id="c-optLevel"></div>
+  </div></div>
+  <div id="c-secLevel"><div><b>Trình độ của máy</b></div>
+  <div class="opts" id="c-optLevel"></div></div>
   <div class="dlgrow"><button class="btn" id="c-dlgCancel">Huỷ</button><button class="btn primary" id="c-dlgStart">Bắt đầu</button></div>
 </dialog>
 
@@ -806,8 +833,9 @@ function pvText(pos,pv){const c=pos.clone();const out=[];for(const m of pv){if(!
 const CELL=60,MX=46,MY=46;
 const svg=$('board');
 function curPos(){return PZ?PZ.pos:G.pos;}
-function mySide(){return PZ?PZ.side:G.userSide;}
-function flipped(){return mySide()===-1;}
+function mySide(){return PZ?PZ.side:(G.mode==='local'?G.pos.side:G.userSide);}
+function viewSide(){return PZ?PZ.side:(G.mode==='local'?1:G.userSide);}
+function flipped(){return viewSide()===-1;}
 function xy(sq){let r=(sq/9)|0,c=sq%9;if(flipped()){r=9-r;c=8-c;}return [MX+c*CELL,MY+r*CELL];}
 let staticFlip=null;
 function drawStatic(){
@@ -825,7 +853,7 @@ function drawStatic(){
   for(const [r,c] of marks){const x=x0+c*CELL,y=y0+r*CELL,g=5,l=11;
     for(const sx of [-1,1]){if((c===0&&sx<0)||(c===8&&sx>0))continue;for(const sy of [-1,1]){s+=`<path class="mk" d="M${x+sx*g} ${y+sy*(g+l)} L${x+sx*g} ${y+sy*g} L${x+sx*(g+l)} ${y+sy*g}"/>`;}}}
   // file numbers: top = opponent numbering, bottom = yours
-  const me=mySide();
+  const me=viewSide();
   for(let dc=0;dc<9;dc++){const c=fl?8-dc:dc;const x=x0+dc*CELL;
     s+=`<text class="fl" x="${x}" y="${y0-24}" text-anchor="middle">${fileOf(c,-me)}</text><text class="fl" x="${x}" y="${y1+33}" text-anchor="middle">${fileOf(c,me)}</text>`;}
   s+=`</g><g id="dyn"></g>`;
@@ -879,13 +907,16 @@ function turnStatus(){
   if(PZ){if(PZ.done){setStatus('Đã giải xong bài tập');return;}setStatus('Lượt bạn ('+SIDE_NAME[PZ.side]+')');return;}
   if(G.over){setStatus(G.over.text);return;}
   if(G.paused){setStatus('Đọc nhận xét, rồi chọn Thử lại hoặc Tiếp tục');return;}
+  if(G.mode==='local'){setStatus('Lượt '+SIDE_NAME[G.pos.side]+(G.pos.inCheck(G.pos.side)?' — đang bị chiếu!':''),{alert:G.pos.inCheck(G.pos.side)});return;}
+  if(G.mode==='online'){if(G.pos.side===G.userSide)setStatus(G.pos.inCheck(G.userSide)?'Bạn đang bị chiếu! Hãy giải chiếu.':'Lượt bạn ('+SIDE_NAME[G.userSide]+')',{alert:G.pos.inCheck(G.userSide)});else setStatus('Chờ đối thủ đi…',{spin:true});return;}
   const pos=G.pos;
   if(pos.side===G.userSide){if(pos.inCheck(G.userSide))setStatus('Bạn đang bị chiếu! Hãy giải chiếu.',{alert:true});else setStatus('Lượt bạn ('+SIDE_NAME[G.userSide]+')');}
   else setStatus('Máy đang suy nghĩ…',{spin:true});
 }
 function updateButtons(){
-  $('bHint').disabled=busy||isFrozen()||curPos().side!==mySide();
-  $('bUndo').disabled=busy||!!PZ||!G.log.some(e=>e.who==='user');
+  const pvp=!PZ&&G.mode&&G.mode!=='ai'&&!(G.mode==='online'&&window.Net&&Net.role==='host');
+  $('bHint').disabled=busy||pvp||isFrozen()||curPos().side!==mySide();
+  $('bUndo').disabled=busy||!!PZ||G.mode==='online'||(G.mode==='local'?!G.log.length:!G.log.some(e=>e.who==='user'));
 }
 
 // ---------- feed ----------
@@ -898,7 +929,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
 // ---------- game ----------
 function newGame(side,level){
   PZ=null;$('pzb').className='pzbanner';
-  G={pos:new Pos(),start:START_FEN,userSide:side,level,log:[],moves:[],over:null,paused:null,hints:0,tips:{},pre:null};
+  G={pos:new Pos(),start:START_FEN,userSide:side,level,log:[],moves:[],over:null,paused:null,hints:0,tips:{},pre:null,mode:'ai'};
   selected=-1;legalFrom=[];hintStage=0;hintMove=0;hintPiece=-1;
   clearFeed();
   addCard('info',`<p><b>Ván mới:</b> bạn cầm ${SIDE_NAME[side]}, máy ở mức ${LEVELS[level].name}.</p><p>Sau mỗi nước, thầy sẽ chấm điểm và giải thích. Vòng đỏ nét đứt là quân của bạn đang bị đe doạ. Bấm <b>Gợi ý</b> một lần để biết nên chú ý quân nào, bấm lần nữa để xem nước đi cụ thể.</p><p class="tip">Thói quen quan trọng nhất: trước mỗi nước, hãy hỏi “đối phương vừa đi để làm gì?” và “sau nước của mình, họ ăn được gì?”.</p>`);
@@ -906,7 +937,7 @@ function newGame(side,level){
   saveGame();render();turnStatus();
   if(side===-1)aiTurn();
 }
-function saveGame(){store.game={start:G.start,moves:G.moves,userSide:G.userSide,level:G.level,log:G.log,hints:G.hints,tips:G.tips,over:G.over};store.settings=settings;saveStore();}
+function saveGame(){if(G.mode&&G.mode!=='ai')return;store.game={start:G.start,moves:G.moves,userSide:G.userSide,level:G.level,log:G.log,hints:G.hints,tips:G.tips,over:G.over};store.settings=settings;saveStore();}
 function restoreGame(){
   const g=store.game;if(!g)return false;
   try{
@@ -937,7 +968,7 @@ svg.addEventListener('click',e=>{
   onSquare(r*9+c);
 });
 
-function play(m){if(PZ)puzzleMove(m);else userMove(m);}
+function play(m){if(PZ)puzzleMove(m);else if(G.mode&&G.mode!=='ai')humanMove(m);else userMove(m);}
 
 function getPre(pos){
   if(G.pre&&G.pre.h1===pos.h1&&G.pre.h2===pos.h2)return G.pre.an;
@@ -1047,6 +1078,7 @@ function endState(){
   return null;
 }
 function finish(end){
+  if(G.mode&&G.mode!=='ai'){finishPvp(end);return;}
   const res=end.winner===0?'draw':(end.winner===G.userSide?'win':'loss');
   const text=res==='win'?`Bạn thắng (${end.reason})!`:res==='loss'?`Bạn thua (${end.reason}).`:`Hoà (${end.reason}).`;
   G.over={res,text};
@@ -1068,7 +1100,8 @@ function finish(end){
   saveGame();saveStore();turnStatus();renderProgress();renderPuzzles();
 }
 function undo(){
-  if(busy||PZ)return;
+  if(busy||PZ||G.mode==='online')return;
+  if(G.mode==='local'){if(!G.log.length)return;G.pos.unmake();G.log.pop();G.moves.pop();G.over=null;selected=-1;legalFrom=[];render();turnStatus();return;}
   if(G.paused){retry();return;}
   let ok=false;
   while(G.log.length){const e=G.log[G.log.length-1];G.pos.unmake();G.log.pop();G.moves.pop();if(e.who==='user'){ok=true;break;}}
@@ -1095,6 +1128,7 @@ async function hint(){
 // ---------- puzzles ----------
 async function startPuzzle(def){
   if(busy)return;
+  if(G.mode==='online'){addCard('info','<p>Đang chơi qua mạng — hãy rời phòng trước khi làm bài tập.</p>');selectTab('coach');return;}
   PZ={def,pos:new Pos(def.fen),done:false,kind:def.kind||'mate',n:def.n||1};
   PZ.side=PZ.pos.side;
   selected=-1;legalFrom=[];hintMove=0;hintPiece=-1;hintStage=0;
@@ -1144,6 +1178,52 @@ async function puzzleMove(m){
   await tick(900);pos.unmake();busy=false;render();turnStatus();
 }
 function nextReview(){const list=store.bank;if(!list.length){exitPuzzle();return;}const b=list[Math.floor(Math.random()*list.length)];startPuzzle({name:'Sửa sai lầm của bạn',fen:b.fen,kind:'review',label:b.label});}
+
+
+// ---------- 2 players ----------
+function humanMove(m){
+  const pos=G.pos,who=pos.side,nt=notate(pos,m),ply=G.moves.length;
+  pos.make(m);G.moves.push(m);G.log.push({who:'p',m,short:nt.short,long:nt.long});animMove=m;hintMove=0;hintPiece=-1;
+  if(G.mode==='online')Net.send({t:'move',m,ply});
+  else addCard(who===1?'info':'ai',`<p><b>${SIDE_NAME[who]}:</b> ${esc(nt.long)}</p>`);
+  afterPvp();
+}
+function afterPvp(){const end=endState();if(end)finishPvp(end);render();turnStatus();}
+function finishPvp(end){
+  let text;
+  if(end.winner===0)text=`Hoà (${end.reason}).`;
+  else if(G.mode==='online')text=end.winner===G.userSide?`Bạn thắng (${end.reason})!`:`Bạn thua (${end.reason}).`;
+  else text=`${SIDE_NAME[end.winner]} thắng (${end.reason})!`;
+  G.over={res:'pvp',text};
+  addCard('end',`<header><span class="mv">${esc(text)}</span></header><p>${G.mode==='online'?'Bấm “Chơi lại” trên thanh phòng chơi để đấu ván mới (hai bên đổi màu quân).':'Bấm Ván mới để chơi tiếp.'}</p>`);
+  render();turnStatus();if(window.Net)Net.refresh();
+}
+function blankG(mode,side){return {pos:new Pos(),start:START_FEN,userSide:side,level:G?G.level:1,log:[],moves:[],over:null,paused:null,hints:0,tips:{},pre:null,mode};}
+function resetView(){if(PZ){PZ=null;$('pzb').className='pzbanner';}selected=-1;legalFrom=[];hintMove=0;hintPiece=-1;hintStage=0;staticFlip=null;busy=false;clearFeed();setEval(0);}
+window.XQ={
+  netStart(side,moves){
+    G=blankG('online',side);resetView();
+    for(const m of moves){if(!G.pos.legal().includes(m))break;const nt=notate(G.pos,m);G.pos.make(m);G.moves.push(m);G.log.push({who:'p',m,short:nt.short,long:nt.long});}
+    addCard('info',`<p><b>Chơi qua mạng:</b> bạn cầm ${SIDE_NAME[side]}. Đỏ luôn đi trước. Các nước đi được gửi cho đối thủ ngay lập tức.</p>`);
+    $('sub').textContent='Qua mạng · '+SIDE_NAME[side];
+    const end=G.moves.length?endState():null;if(end)finishPvp(end);
+    selectTab('coach');render();turnStatus();
+  },
+  netMoves(){return G&&G.mode==='online'?G.moves.slice():[];},
+  netOver(){return !!(G&&G.over);},
+  netRemoteMove(m,ply){
+    if(!G||G.mode!=='online'||G.over||ply!==G.moves.length||G.pos.side===G.userSide)return;
+    if(!G.pos.legal().includes(m))return;
+    const nt=notate(G.pos,m);G.pos.make(m);G.moves.push(m);G.log.push({who:'p',m,short:nt.short,long:nt.long});animMove=m;selected=-1;legalFrom=[];hintMove=0;hintPiece=-1;hintStage=0;
+    const w=[];if(G.pos.inCheck(G.userSide))w.push('<b>Bạn đang bị chiếu</b> — phải giải chiếu.');
+    addCard('ai',`<p><b>Đối thủ:</b> ${esc(nt.long)}</p>${w.map(x=>`<p>${x}</p>`).join('')}`);
+    afterPvp();
+  },
+  resign(){if(G.mode==='online'&&!G.over)finishPvp({winner:-G.userSide,reason:'bạn đầu hàng'});},
+  netRemoteResign(){if(G.mode==='online'&&!G.over)finishPvp({winner:G.userSide,reason:'đối thủ đầu hàng'});},
+  leave(){resetView();if(!restoreGame()){G=null;newGame(1,1);}else{render();turnStatus();}},
+  newLocal(){G=blankG('local',1);resetView();addCard('info','<p><b>2 người cùng máy:</b> hai người thay phiên bấm trên bàn cờ, Đỏ đi trước. Nút Đi lại trả lại một nước.</p>');$('sub').textContent='2 người cùng máy';render();turnStatus();}
+};
 
 // ---------- side panels ----------
 function renderMoves(){
@@ -1259,7 +1339,12 @@ function openNew(){if(busy)return;if(G){const r=document.querySelector(`input[na
 window.openNew=openNew;window.nextReview=nextReview;
 $('bNew').onclick=openNew;
 $('dlgCancel').onclick=()=>dlg.close();
-$('dlgStart').onclick=()=>{const side=+document.querySelector('input[name=side]:checked').value,lvl=+document.querySelector('input[name=lvl]:checked').value;dlg.close();staticFlip=null;newGame(side,lvl);};
+function syncDlg(){const md=document.querySelector('input[name=mode]:checked').value;$('secLevel').hidden=md!=='ai';$('secSide').hidden=md==='local';$('dlgStart').textContent=md==='online'?'Tạo phòng':'Bắt đầu';}
+document.querySelectorAll('input[name=mode]').forEach(r=>r.onchange=syncDlg);syncDlg();
+$('dlgStart').onclick=()=>{const md=document.querySelector('input[name=mode]:checked').value,side=+document.querySelector('input[name=side]:checked').value,lvl=+document.querySelector('input[name=lvl]:checked').value;dlg.close();staticFlip=null;
+  if(md==='online'){Net.host('xq',side);return;}
+  Net.leave(true);
+  if(md==='local')XQ.newLocal();else newGame(side,lvl);};
 $('bHint').onclick=hint;
 $('bUndo').onclick=undo;
 function applyTheme(){if(settings.theme)document.documentElement.setAttribute('data-theme',settings.theme);else document.documentElement.removeAttribute('data-theme');}
@@ -1713,7 +1798,7 @@ function pvText(pos, pv) { const c = pos.clone(), o = []; for (const m of pv) { 
 // ---------- rendering ----------
 const SQ = 60, svg = $('c-board');
 const curPos = () => mode === 'lesson' ? L.pos : C.pos;
-const flipped = () => mode === 'game' && C.userSide === -1;
+const flipped = () => mode === 'game' && C.mode !== 'local' && C.userSide === -1;
 function xy(i) { let r = i >> 3, c = i & 7; if (flipped()) { r = 7 - r; c = 7 - c; } return [c * SQ, r * SQ]; }
 function draw() {
   const pos = curPos(), fl = flipped();
@@ -1738,9 +1823,10 @@ function draw() {
   // pieces
   for (let i = 0; i < 64; i++) { const p = pos.b[i]; if (p === '.') continue; const [x, y] = xy(i); s += `<g class="cp ${p < 'a' ? 'w' : 'b'}" data-sq="${i}" transform="translate(${x + SQ / 2} ${y + SQ / 2})"><g class="mvw"><text y="2">${GLY[p.toLowerCase()]}</text></g></g>`; }
   // overlays
-  if (mode === 'game' && pos.side === C.userSide && !frozen()) {
-    if (opts.threats) for (const h of hanging(pos, C.userSide)) { const [x, y] = xy(h.sq); s += `<circle class="cthr" cx="${x + 30}" cy="${y + 30}" r="27"/>`; }
-    if (opts.opps) for (const h of hanging(pos, -C.userSide)) { const [x, y] = xy(h.sq); s += `<circle class="copp" cx="${x + 30}" cy="${y + 30}" r="27"/>`; }
+  const meV = mode === 'game' ? (C.mode === 'local' ? pos.side : C.userSide) : 0;
+  if (mode === 'game' && pos.side === meV && !frozen()) {
+    if (opts.threats) for (const h of hanging(pos, meV)) { const [x, y] = xy(h.sq); s += `<circle class="cthr" cx="${x + 30}" cy="${y + 30}" r="27"/>`; }
+    if (opts.opps) for (const h of hanging(pos, -meV)) { const [x, y] = xy(h.sq); s += `<circle class="copp" cx="${x + 30}" cy="${y + 30}" r="27"/>`; }
   }
   if (sel >= 0) { const [x, y] = xy(sel); s += `<rect class="csel" x="${x + 1.5}" y="${y + 1.5}" width="${SQ - 3}" height="${SQ - 3}"/>`;
     const seen = new Set(); for (const m of legalFrom) { const t = mt(m); if (seen.has(t)) continue; seen.add(t); const [tx, ty] = xy(t); const capt = pos.b[t] !== '.' || (pos.b[sel].toLowerCase() === 'p' && t === pos.ep); s += capt ? `<circle class="ctgc" cx="${tx + 30}" cy="${ty + 30}" r="27"/>` : `<circle class="ctg" cx="${tx + 30}" cy="${ty + 30}" r="9"/>`; } }
@@ -1766,13 +1852,15 @@ function turnStatus() {
   if (mode === 'lesson') { status(L.done && L.step.type !== 'info' ? 'Hoàn thành! Bấm “Bước tiếp”.' : 'Bài học: ' + LESSONS[L.li].title); return; }
   if (C.over) { status(C.over.text); return; }
   if (C.paused) { status('Đọc nhận xét, rồi chọn Thử lại hoặc Tiếp tục'); return; }
+  if (C.mode === 'local') { const ck = C.pos.inCheck(C.pos.side); status('Lượt ' + SN[C.pos.side] + (ck ? ' — đang bị chiếu!' : ''), { alert: ck }); return; }
+  if (C.mode === 'online') { if (C.pos.side === C.userSide) { const ck = C.pos.inCheck(C.userSide); status(ck ? 'Bạn đang bị chiếu! Phải thoát chiếu.' : 'Lượt bạn (' + SN[C.userSide] + ')', { alert: ck }); } else status('Chờ đối thủ đi…', { spin: true }); return; }
   if (C.pos.side === C.userSide) { if (C.pos.inCheck(C.userSide)) status('Bạn đang bị chiếu! Phải thoát chiếu.', { alert: true }); else status('Lượt bạn (' + SN[C.userSide] + ')'); }
   else status('Máy đang suy nghĩ…', { spin: true });
 }
 function buttons() {
-  const hintOk = mode === 'lesson' ? (!L.done && L.step.type !== 'info') : (!busy && !frozen() && C.pos.side === C.userSide);
+  const hintOk = mode === 'lesson' ? (!L.done && L.step.type !== 'info') : (!busy && !frozen() && C.pos.side === C.userSide && (!C.mode || C.mode === 'ai' || (C.mode === 'online' && window.Net && Net.role === 'host')));
   $('c-hint').disabled = busy || !hintOk;
-  $('c-undo').disabled = busy || mode === 'lesson' || !C || !C.log.some(e => e.who === 'user');
+  $('c-undo').disabled = busy || mode === 'lesson' || !C || C.mode === 'online' || (C.mode === 'local' ? !C.log.length : !C.log.some(e => e.who === 'user'));
   $('c-evalwrap').style.display = mode === 'game' ? '' : 'none';
 }
 function syncLatest() { const Lt = $('c-latest'); Lt.innerHTML = ''; [...$('c-feed').children].slice(0, 2).forEach(c => Lt.appendChild(c.cloneNode(true))); }
@@ -1809,8 +1897,9 @@ async function selectOrMove(sq, moves, allowFrom, cb) {
 function onSquare(sq) {
   if (busy) return;
   if (mode === 'lesson') { lessonSquare(sq); return; }
-  if (frozen() || C.pos.side !== C.userSide) return;
-  selectOrMove(sq, C.pos.legal(), q => side(C.pos.b[q]) === C.userSide, userMove);
+  const me = C.mode === 'local' ? C.pos.side : C.userSide;
+  if (frozen() || C.pos.side !== me) return;
+  selectOrMove(sq, C.pos.legal(), q => side(C.pos.b[q]) === me, C.mode && C.mode !== 'ai' ? humanMove : userMove);
 }
 
 // ---------- lessons ----------
@@ -1934,7 +2023,7 @@ function lessonHint() {
 
 // ---------- game ----------
 function newGame(s, lv) {
-  C = { pos: new Pos(), userSide: s, level: lv, log: [], moves: [], over: null, paused: null, hints: 0, tips: {}, pre: null };
+  C = { pos: new Pos(), userSide: s, level: lv, log: [], moves: [], over: null, paused: null, hints: 0, tips: {}, pre: null, mode: 'ai' };
   mode = 'game'; L = null; $('c-lesson').className = 'pzbanner';
   sel = -1; legalFrom = []; hintMove = 0; hintStage = 0; hintSq = -1;
   clearFeed();
@@ -1943,7 +2032,7 @@ function newGame(s, lv) {
   saveGame(); draw(); turnStatus(); selTab('coach');
   if (s === -1) aiTurn();
 }
-function saveGame() { CS.game = { moves: C.moves, userSide: C.userSide, level: C.level, log: C.log, hints: C.hints, tips: C.tips, over: C.over }; save(); }
+function saveGame() { if (C.mode && C.mode !== 'ai') return; CS.game = { moves: C.moves, userSide: C.userSide, level: C.level, log: C.log, hints: C.hints, tips: C.tips, over: C.over }; save(); }
 function restoreGame() {
   const g = CS.game; if (!g) return false;
   try { C = { pos: new Pos(), userSide: g.userSide, level: g.level, log: g.log || [], moves: [], over: g.over || null, paused: null, hints: g.hints || 0, tips: g.tips || {}, pre: null }; for (const m of g.moves) { if (!C.pos.legal().includes(m)) throw 0; C.pos.make(m); C.moves.push(m); } }
@@ -2048,6 +2137,7 @@ function endState() {
   return null;
 }
 function finish(end) {
+  if (C.mode && C.mode !== 'ai') { finishPvp(end); return; }
   const res = end.winner === 0 ? 'draw' : end.winner === C.userSide ? 'win' : 'loss';
   const text = res === 'win' ? `Bạn thắng (${end.reason})!` : res === 'loss' ? `Bạn thua (${end.reason}).` : `Hoà (${end.reason}).`;
   C.over = { res, text };
@@ -2068,7 +2158,8 @@ function finish(end) {
 }
 document.addEventListener('click', e => { if (e.target.closest('[data-copen]')) openNew(); });
 function undo() {
-  if (busy || mode !== 'game') return;
+  if (busy || mode !== 'game' || C.mode === 'online') return;
+  if (C.mode === 'local') { if (!C.log.length) return; C.pos.unmake(); C.log.pop(); C.moves.pop(); C.over = null; sel = -1; legalFrom = []; draw(); turnStatus(); return; }
   if (C.paused) { retry(); return; }
   let ok = false;
   while (C.log.length) { const e = C.log[C.log.length - 1]; C.pos.unmake(); C.log.pop(); C.moves.pop(); if (e.who === 'user') { ok = true; break; } }
@@ -2088,6 +2179,52 @@ async function hint() {
   else { const pv = an.pv && an.pv.length > 1 ? pvText(pos, an.pv.slice(0, 5)) : ''; card('hint', `<p><b>Gợi ý 2:</b> ${esc(human(pos, an.m))} — ${why.join(', ')}.</p>${pv ? `<p class="muted">Diễn biến dự kiến: ${esc(pv)}.</p>` : ''}`); }
   draw(); turnStatus(); saveGame();
 }
+
+
+// ---------- 2 players ----------
+function humanMove(m) {
+  const pos = C.pos, who = pos.side, sn = san(pos, m), txt = human(pos, m), ply = C.moves.length;
+  pos.make(m); C.moves.push(m); C.log.push({ who: 'p', m, san: sn }); animMove = m; hintMove = 0; hintStage = 0;
+  if (C.mode === 'online') Net.send({ t: 'move', m, ply }); else card(who === 1 ? 'info' : 'ai', `<p><b>${SN[who]}:</b> ${esc(txt)}</p>`);
+  afterPvp();
+}
+function afterPvp() { const end = endState(); if (end) finishPvp(end); draw(); turnStatus(); }
+function finishPvp(end) {
+  let text;
+  if (end.winner === 0) text = `Hoà (${end.reason}).`;
+  else if (C.mode === 'online') text = end.winner === C.userSide ? `Bạn thắng (${end.reason})!` : `Bạn thua (${end.reason}).`;
+  else text = `${SN[end.winner]} thắng (${end.reason})!`;
+  C.over = { res: 'pvp', text };
+  card('end', `<header><span class="mv">${esc(text)}</span></header><p>${C.mode === 'online' ? 'Bấm “Chơi lại” trên thanh phòng chơi để đấu ván mới (hai bên đổi màu quân).' : 'Bấm Ván mới để chơi tiếp.'}</p>`);
+  draw(); turnStatus(); if (window.Net) Net.refresh();
+}
+function blankC(md, s) { return { pos: new Pos(), userSide: s, level: C ? C.level : 0, log: [], moves: [], over: null, paused: null, hints: 0, tips: {}, pre: null, mode: md }; }
+function resetC() { if (mode === 'lesson') { L = null; $('c-lesson').className = 'pzbanner'; } mode = 'game'; sel = -1; legalFrom = []; hintMove = 0; hintStage = 0; hintSq = -1; busy = false; clearFeed(); setEval(0); }
+window.CHX = {
+  netStart(s, moves) {
+    resetC(); C = blankC('online', s);
+    for (const m of moves) { if (!C.pos.legal().includes(m)) break; const sn = san(C.pos, m); C.pos.make(m); C.moves.push(m); C.log.push({ who: 'p', m, san: sn }); }
+    card('info', `<p><b>Chơi qua mạng:</b> bạn cầm ${SN[s]}. Trắng luôn đi trước. Các nước đi được gửi cho đối thủ ngay lập tức.</p>`);
+    $('c-sub').textContent = 'Qua mạng · ' + SN[s];
+    const end = C.moves.length ? endState() : null; if (end) finishPvp(end);
+    selTab('coach'); draw(); turnStatus();
+  },
+  netMoves() { return C && C.mode === 'online' ? C.moves.slice() : []; },
+  netOver() { return !!(C && C.over); },
+  netRemoteMove(m, ply) {
+    if (!C || C.mode !== 'online' || C.over || ply !== C.moves.length || C.pos.side === C.userSide) return;
+    if (!C.pos.legal().includes(m)) return;
+    const sn = san(C.pos, m), txt = human(C.pos, m);
+    C.pos.make(m); C.moves.push(m); C.log.push({ who: 'p', m, san: sn }); animMove = m; sel = -1; legalFrom = []; hintMove = 0; hintStage = 0;
+    const w = []; if (C.pos.inCheck(C.userSide)) w.push('<b>Bạn đang bị chiếu</b> — chạy Vua, chặn, hoặc ăn quân đang chiếu.');
+    card('ai', `<p><b>Đối thủ:</b> ${esc(txt)}</p>${w.map(x => `<p>${x}</p>`).join('')}`);
+    afterPvp();
+  },
+  resign() { if (C.mode === 'online' && !C.over) finishPvp({ winner: -C.userSide, reason: 'bạn đầu hàng' }); },
+  netRemoteResign() { if (C.mode === 'online' && !C.over) finishPvp({ winner: C.userSide, reason: 'đối thủ đầu hàng' }); },
+  leave() { resetC(); if (!restoreGame()) newGame(1, 0); else { $('c-sub').textContent = `${SN[C.userSide]} · ${LEVELS[C.level].name}`; draw(); turnStatus(); } },
+  newLocal() { resetC(); C = blankC('local', 1); card('info', '<p><b>2 người cùng máy:</b> hai người thay phiên bấm trên bàn cờ, Trắng đi trước. Nút Đi lại trả lại một nước.</p>'); $('c-sub').textContent = '2 người cùng máy'; selTab('coach'); draw(); turnStatus(); }
+};
 
 // ---------- panels ----------
 function renderMoves() {
@@ -2128,7 +2265,12 @@ $('c-optLevel').innerHTML = LEVELS.map((l, i) => `<label><input type="radio" nam
 function openNew() { if (busy) return; if (C) { const r = document.querySelector(`input[name=clvl][value="${C.level}"]`); if (r) r.checked = true; const sd = document.querySelector(`input[name=cside][value="${C.userSide}"]`); if (sd) sd.checked = true; } if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); }
 $('c-new').onclick = openNew;
 $('c-dlgCancel').onclick = () => dlg.close();
-$('c-dlgStart').onclick = () => { const s = +document.querySelector('input[name=cside]:checked').value, lv = +document.querySelector('input[name=clvl]:checked').value; dlg.close(); newGame(s, lv); };
+function syncCDlg() { const md = document.querySelector('input[name=cmode]:checked').value; $('c-secLevel').hidden = md !== 'ai'; $('c-secSide').hidden = md === 'local'; $('c-dlgStart').textContent = md === 'online' ? 'Tạo phòng' : 'Bắt đầu'; }
+document.querySelectorAll('input[name=cmode]').forEach(r => r.onchange = syncCDlg); syncCDlg();
+$('c-dlgStart').onclick = () => { const md = document.querySelector('input[name=cmode]:checked').value, s = +document.querySelector('input[name=cside]:checked').value, lv = +document.querySelector('input[name=clvl]:checked').value; dlg.close();
+  if (md === 'online') { Net.host('ch', s); return; }
+  Net.leave(true);
+  if (md === 'local') CHX.newLocal(); else newGame(s, lv); };
 $('c-hint').onclick = hint;
 $('c-undo').onclick = undo;
 $('c-theme').onclick = () => $('bTheme').click();
@@ -2149,7 +2291,7 @@ if (firstTime) {
 }
 window.chessShown = () => {
   draw(); turnStatus();
-  if (mode === 'game' && !C.over && !C.paused && C.pos.side !== C.userSide && !busy && C.moves.length) aiTurn();
+  if (mode === 'game' && !C.over && !C.paused && C.pos.side !== C.userSide && !busy && C.moves.length && (!C.mode || C.mode === 'ai')) aiTurn();
 };
 })();
 
@@ -2157,7 +2299,153 @@ window.chessShown = () => {
 <script>
 (function(){const btns=document.querySelectorAll('.gamesw button');
 function show(g){document.getElementById('xqApp').hidden=g!=='xq';document.getElementById('chApp').hidden=g!=='ch';btns.forEach(b=>b.setAttribute('aria-pressed',b.dataset.g===g?'true':'false'));document.title=g==='ch'?'Luyện Cờ Vua':'Luyện Cờ Tướng';if(store.view!==g){store.view=g;saveStore();}if(g==='ch'&&window.chessShown)window.chessShown();}
-btns.forEach(b=>b.onclick=()=>show(b.dataset.g));show(store.view==='ch'?'ch':'xq');})();
+window.showGame=show;btns.forEach(b=>b.onclick=()=>show(b.dataset.g));show(store.view==='ch'?'ch':'xq');})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+// ================= 2 người qua mạng (PeerJS / WebRTC) =================
+const Net = (() => {
+  const PFX = 'luyenco-vn-';
+  const SIDES = { xq: { 1: 'Đỏ', '-1': 'Đen' }, ch: { 1: 'Trắng', '-1': 'Đen' } };
+  let peer = null, conn = null, role = null, game = null, code = null, side = 1, state = null, err = '', joinTimer = null;
+  const $ = id => document.getElementById(id);
+  const api = g => g === 'ch' ? window.CHX : window.XQ;
+  const visible = () => $('xqApp').hidden ? 'ch' : 'xq';
+  const genCode = () => { const a = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let s = ''; for (let i = 0; i < 6; i++) s += a[Math.floor(Math.random() * a.length)]; return s; };
+  const link = () => location.href.split('#')[0] + '#vao-' + code;
+
+  function errText(e) {
+    const t = e && e.type;
+    if (t === 'peer-unavailable') return `Không tìm thấy phòng <b>${code}</b>. Kiểm tra lại mã, hoặc nhờ bạn bè tạo phòng mới và gửi lại link.`;
+    if (t === 'browser-incompatible') return 'Trình duyệt này không hỗ trợ chơi qua mạng. Hãy thử Chrome, Safari hoặc Edge bản mới.';
+    if (t === 'nolib' || t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed')
+      return 'Không kết nối được máy chủ ghép phòng. Kiểm tra lại mạng. Nếu bạn đang mở trang bên trong claude.ai, hãy dùng bản trên GitHub Pages.';
+    return 'Có lỗi kết nối' + (t ? ` (${t})` : '') + '. Thử lại sau ít phút.';
+  }
+  function makePeer(id) {
+    return new Promise((res, rej) => {
+      if (typeof Peer === 'undefined') { rej({ type: 'nolib' }); return; }
+      let p;
+      try { p = id ? new Peer(id, { debug: 0 }) : new Peer({ debug: 0 }); } catch (e) { rej({ type: 'browser-incompatible' }); return; }
+      const onErr = e => { p.off('open'); rej(e); };
+      p.once('error', onErr);
+      p.once('open', () => { p.off('error', onErr); res(p); });
+    });
+  }
+  function fail(e) { state = 'error'; err = errText(e); render(); }
+  function setState(s) { state = s; render(); }
+
+  function attach(c) {
+    conn = c;
+    c.on('data', onData);
+    c.on('close', () => { if (conn === c) { conn = null; if (state && state !== 'error') setState('closed'); } });
+    c.on('error', () => { if (conn === c && state === 'playing') setState('closed'); });
+  }
+  function watchPeer(p) {
+    p.on('error', e => {
+      if (e.type === 'peer-unavailable') { clearTimeout(joinTimer); fail(e); return; }
+      if (e.type === 'network' || e.type === 'server-error' || e.type === 'socket-error') { if (state !== 'playing') fail(e); }
+    });
+    p.on('disconnected', () => { try { if (!p.destroyed) p.reconnect(); } catch (_) {} });
+  }
+
+  async function host(g, mySide, tries = 0) {
+    leave(true);
+    role = 'host'; game = g; side = mySide; code = genCode();
+    window.showGame && window.showGame(g);
+    setState('creating');
+    try { peer = await makePeer(PFX + code); }
+    catch (e) { if (e && e.type === 'unavailable-id' && tries < 3) return host(g, mySide, tries + 1); fail(e); return; }
+    watchPeer(peer);
+    peer.on('connection', c => {
+      if (conn && conn.open) { c.on('open', () => { c.send({ t: 'full' }); setTimeout(() => c.close(), 400); }); return; }
+      attach(c);
+      c.on('open', () => { c.send({ t: 'hello', game, side: -side, moves: api(game).netMoves() }); setState('playing'); });
+    });
+    api(g).netStart(side, []);
+    setState('waiting');
+  }
+  async function join(c) {
+    c = (c || '').trim().toUpperCase();
+    if (!/^[A-Z0-9]{6}$/.test(c)) { alert('Mã phòng gồm 6 ký tự chữ và số.'); return; }
+    leave(true);
+    role = 'guest'; code = c; game = null;
+    setState('connecting');
+    try { peer = await makePeer(); } catch (e) { fail(e); return; }
+    watchPeer(peer);
+    const cn = peer.connect(PFX + code, { reliable: true });
+    attach(cn);
+    clearTimeout(joinTimer);
+    joinTimer = setTimeout(() => { if (state === 'connecting') { state = 'error'; err = `Chưa kết nối được tới phòng <b>${code}</b>. Có thể mạng của một trong hai bên chặn kết nối trực tiếp. Hãy thử lại, hoặc đổi sang Wi-Fi/4G khác.`; render(); } }, 15000);
+  }
+  function onData(d) {
+    if (!d || typeof d !== 'object') return;
+    if (d.t === 'hello' && role === 'guest') {
+      clearTimeout(joinTimer);
+      if (d.game !== 'xq' && d.game !== 'ch') return;
+      game = d.game; side = d.side === -1 ? -1 : 1;
+      window.showGame && window.showGame(game);
+      api(game).netStart(side, Array.isArray(d.moves) ? d.moves.filter(Number.isInteger) : []);
+      history.replaceState(null, '', '#vao-' + code);
+      setState('playing');
+    } else if (d.t === 'move' && game) api(game).netRemoteMove(d.m, d.ply);
+    else if (d.t === 'resign' && game) { api(game).netRemoteResign(); render(); }
+    else if (d.t === 'rematch' && game) { side = -side; api(game).netStart(side, []); setState('playing'); }
+    else if (d.t === 'full') { state = 'error'; err = `Phòng <b>${code}</b> đã đủ 2 người.`; render(); }
+  }
+  function send(o) { if (conn && conn.open) conn.send(o); }
+  function leave(silent) {
+    clearTimeout(joinTimer);
+    const g = game, wasIn = !!state;
+    try { if (conn) conn.close(); } catch (_) {}
+    try { if (peer) peer.destroy(); } catch (_) {}
+    peer = conn = null; role = null; state = null; game = null;
+    if (/^#vao-/.test(location.hash)) history.replaceState(null, '', location.href.split('#')[0]);
+    render();
+    if (!silent && wasIn && g) api(g).leave();
+  }
+  async function share() {
+    const url = link();
+    if (navigator.share) { try { await navigator.share({ title: 'Vào chơi cờ với mình', text: `Mã phòng: ${code}`, url }); return; } catch (_) {} }
+    try { await navigator.clipboard.writeText(url); toast('Đã sao chép link mời'); } catch (_) { prompt('Sao chép link mời này và gửi cho bạn bè:', url); }
+  }
+  function toast(t) { const el = document.querySelector('.netbar:not([hidden]) .nmsg'); if (!el) return; const s = document.createElement('div'); s.className = 'muted'; s.style.fontSize = '13px'; s.textContent = t; el.after(s); setTimeout(() => s.remove(), 2200); }
+  function render() {
+    for (const id of ['xq-net', 'ch-net']) { const e = $(id); e.hidden = true; e.innerHTML = ''; }
+    if (!state) return;
+    const g = game || visible(), el = $(g === 'ch' ? 'ch-net' : 'xq-net');
+    el.hidden = false;
+    const sn = SIDES[g][side];
+    const B = (n, t, pri) => `<button class="btn small${pri ? ' primary' : ''}" data-n="${n}">${t}</button>`;
+    let msg = '', btns = '', extra = '';
+    if (state === 'creating') { msg = 'Đang tạo phòng…'; btns = B('leave', 'Huỷ'); }
+    else if (state === 'waiting') { msg = `Phòng <b>${code}</b> đã sẵn sàng, bạn cầm <b>${sn}</b>. Gửi link mời cho bạn bè — họ mở link là vào chơi ngay, hoặc nhập mã phòng trong mục Ván mới.`; extra = `<div class="nlink">${link()}</div>`; btns = B('share', 'Gửi link mời', 1) + B('leave', 'Rời phòng'); }
+    else if (state === 'connecting') { msg = `Đang vào phòng <b>${code}</b>…`; btns = B('leave', 'Huỷ'); }
+    else if (state === 'playing') { const over = game && api(game).netOver(); msg = `Đang chơi qua mạng · phòng <b>${code}</b> · bạn cầm <b>${sn}</b>`; btns = (over ? B('rematch', 'Chơi lại (đổi bên)', 1) : B('resign', 'Đầu hàng')) + B('leave', 'Rời phòng'); }
+    else if (state === 'closed') { msg = role === 'host' ? 'Đối thủ đã thoát hoặc mất mạng. Họ có thể mở lại link mời để vào chơi tiếp đúng ván này.' : 'Mất kết nối với phòng.'; btns = (role === 'guest' ? B('rejoin', 'Kết nối lại', 1) : B('share', 'Gửi lại link mời', 1)) + B('leave', 'Rời phòng'); }
+    else if (state === 'error') { msg = err; btns = (role === 'guest' && code ? B('rejoin', 'Thử lại', 1) : '') + B('leave', 'Đóng'); }
+    el.innerHTML = `<div class="nmsg"><span class="ndot ${state}"></span>${msg}</div>${extra}<div class="row">${btns}</div>`;
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-n]'); if (!b) return;
+    const a = b.dataset.n;
+    if (a === 'share') share();
+    else if (a === 'leave') { if (state === 'playing' && game && !api(game).netOver() && !confirm('Rời phòng sẽ kết thúc ván đang chơi. Bạn chắc chứ?')) return; if (state === 'playing' && game && !api(game).netOver()) send({ t: 'resign' }); leave(); }
+    else if (a === 'resign') { if (!confirm('Đầu hàng ván này?')) return; api(game).resign(); send({ t: 'resign' }); render(); }
+    else if (a === 'rematch') { send({ t: 'rematch' }); side = -side; api(game).netStart(side, []); render(); }
+    else if (a === 'rejoin') join(code);
+  });
+  for (const [inp, btn, dlg] of [['joinCode', 'joinBtn', 'dlgNew'], ['c-joinCode', 'c-joinBtn', 'c-dlg']]) {
+    const go = () => { const v = $(inp).value; $(dlg).close(); join(v); };
+    $(btn).onclick = go;
+    $(inp).addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  }
+  const mm = location.hash.match(/^#vao-([A-Za-z0-9]{6})$/);
+  if (mm) setTimeout(() => join(mm[1]), 50);
+  return { host, join, send, leave, refresh: render, get state() { return state; }, get role() { return role; } };
+})();
+window.Net = Net;
+
 </script>
 </body>
 </html>
